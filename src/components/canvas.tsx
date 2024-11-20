@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -17,6 +17,7 @@ import '@xyflow/react/dist/style.css';
 
 import styles from "@/components/canvas.module.css"
 import MenuButton from '@/components/menu-button';
+import MenuDropdown from '@/components/menu-dropdown';
 
 
 const initialNodes = [
@@ -28,6 +29,11 @@ const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
 export default function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [show, setShow] = useState(false);
+
+  function toggleMenu() {
+    setShow((prev: Boolean) => !prev)
+  }
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -45,7 +51,8 @@ export default function Canvas() {
       >
         <Controls className={styles.controls} />
         <Panel>
-          <MenuButton />
+          <MenuButton show={show} toggleMenu={toggleMenu} />
+          {show && <MenuDropdown />}
         </Panel>
         <MiniMap className={styles.controls} />
         <Background variant={BackgroundVariant.Dots} gap={15} size={2} />

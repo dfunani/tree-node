@@ -15,4 +15,5 @@
 
 .menu-button:hover {
     background-color: var(--foreground);
+    /* display: block; */
 }
