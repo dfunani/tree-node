@@ -1,0 +1,8 @@
+.canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+.controls{
+    color: var(--foreground);
+}
