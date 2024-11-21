@@ -3,6 +3,46 @@
     height: 100vh;
 }
 
-.controls{
+.controls {
     color: var(--foreground);
+}
+
+.node-item {
+    display: flex;
+    border: 1px solid var(--foreground);
+    border-radius: 5px;
+    padding: 10px;
+    background-color: var(--background);
+}
+
+.node-item {
+    display: flex;
+    border: 1px solid var(--foreground);
+    border-radius: 5px;
+    padding: 5px; /* Adjust padding as needed */
+    background-color: var(--background);
+    width: fit-content; /* Adjust width to fit content */
+    align-items: center;
+  }
+
+.node-content {
+    flex: 1;
+    /* Flex to fill remaining space */
+    padding-left: 10px;
+}
+
+.name-surname {
+    font-weight: bold;
+    font-size: 1.2em;
+    /* Increase size for emphasis */
+    margin-bottom: 5px;
+    /* Add some space */
+}
+
+.location,
+.dob {
+    font-size: 0.9em;
+    /* Smaller font size */
+    color: #666;
+    /* Light theme or adjust color */
 }

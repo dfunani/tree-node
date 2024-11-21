@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -11,34 +11,74 @@ import {
   addEdge,
   BackgroundVariant,
   Panel,
-} from '@xyflow/react';
+} from "@xyflow/react";
 
-import '@xyflow/react/dist/style.css';
+import "@xyflow/react/dist/style.css";
+import { v4 as uuid4 } from "uuid";
 
-import styles from "@/components/canvas.module.css"
-import MenuButton from '@/components/menu-button';
-import MenuDropdown from '@/components/menu-dropdown';
+import styles from "@/src/components/canvas.module.css";
+import MenuButton from "@/src/components/menu-button";
+import MenuDropdown from "@/src/components/menu-dropdown";
+import MenuItem from "@/src/components/menu-item";
+import { generateImages } from "@/public/utils/factories";
+import { Nodes, Position } from "@/public/utils/types";
+import { StaticImageData } from "next/image";
+import CanvasItem from "@/src/components/canvas-item";
 
 
-const initialNodes = [
-  { id: '1', position: { x: 0, y: 0 }, data: { label: '1' } },
-  { id: '2', position: { x: 0, y: 100 }, data: { label: '2' } },
-];
-const initialEdges = [{ id: 'e1-2', source: '1', target: '2' }];
+
+const NodeComponents = {
+  "Canvas-Item": CanvasItem
+}
 
 export default function Canvas() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [show, setShow] = useState(false);
 
   function toggleMenu() {
-    setShow((prev: Boolean) => !prev)
+    setShow((prev: Boolean) => !prev);
   }
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
-    [setEdges],
+    [setEdges]
   );
+
+  function addNode(position: Position, src: StaticImageData | string) {
+    setNodes((nodes: Nodes[]) => {
+      let id = uuid4().toString()
+      let node: Nodes = {
+        id: id,
+        position: position,
+        type: "Canvas-Item",
+        data: {
+          fullName: ["John", "Doe"],
+          location: ["Cape Town", "South Africa"],
+          dob: new Date(),
+          image: src,
+          label: "Canvas-Node"
+        }
+      }
+      return [...nodes, node];
+    });
+  }
+
+  function getMenuItems() {
+    let images = generateImages("dark");
+    let result = [];
+    for (let image in images) {
+      result.push(
+        <MenuItem
+          key={uuid4()}
+          src={images[image]}
+          label={image}
+          onDragItem={addNode}
+        />
+      );
+    }
+    return result;
+  }
 
   return (
     <div className={styles.canvas}>
@@ -48,11 +88,12 @@ export default function Canvas() {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
+        nodeTypes={NodeComponents}
       >
         <Controls className={styles.controls} />
         <Panel>
           <MenuButton show={show} toggleMenu={toggleMenu} />
-          {show && <MenuDropdown />}
+          {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
         </Panel>
         <MiniMap className={styles.controls} />
         <Background variant={BackgroundVariant.Dots} gap={15} size={2} />

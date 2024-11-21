@@ -1,11 +1,13 @@
-import styles from "@/components/dropdown.module.css"
+import styles from "@/src/components/dropdown.module.css"
 
-export default function MenuDropdown() {
+type Props = {
+    children: any
+}
+
+export default function MenuDropdown(props: Props) {
     return <div className={styles["dropdown-menu"]}>
         <ul>
-            <li><a href="#">Option 1</a></li>
-            <li><a href="#">Option 2</a></li>
-            <li><a href="#">Option 3</a></li>
+            {props.children}
         </ul>
     </div>
 }

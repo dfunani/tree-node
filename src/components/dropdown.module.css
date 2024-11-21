@@ -24,11 +24,16 @@
     padding: 10px 15px;
 }
 
-.dropdown-menu a {
-    text-decoration: none;
-    color: inherit;
-}
 
-.dropdown-menu a:hover {
-    background-color: var(--foreground);
-}
+.dropdown-menu .card-item {
+    width: 100px; /* Adjust the width as needed */
+    height: 100px; /* Adjust the height as needed */
+    border-radius: 10px; /* Adjust the border radius as needed */
+    overflow: hidden;
+  }
+  
+  .dropdown-menu .card-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }

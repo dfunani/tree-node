@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styles from "@/components/button.module.css"
+import styles from "@/src/components/button.module.css"
 
 type Props = {
     show: boolean;
