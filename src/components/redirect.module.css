@@ -1,0 +1,17 @@
+.container {
+    padding: 20px;
+    background-color: var(--foreground);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    width: 50%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.redirect-message {
+    font-size: xx-large;
+    margin-bottom: 20px;
+    text-align: center;
+}

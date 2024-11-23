@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   ReactFlow,
   MiniMap,
@@ -20,12 +20,12 @@ import styles from "@/src/components/canvas.module.css";
 import MenuButton from "@/src/components/menu-button";
 import MenuDropdown from "@/src/components/menu-dropdown";
 import MenuItem from "@/src/components/menu-item";
-import { generateImages } from "@/public/utils/factories";
-import { Nodes, Position } from "@/public/utils/types";
+import { buildDate, generateImages } from "@/public/utils/factories";
+import { Nodes, Position, Edges } from "@/public/utils/types";
 import { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
-
-
+import SaveButton from "@/src/components/save-button";
+import { signOut, useSession } from "next-auth/react";
 
 const NodeComponents = {
   "Canvas-Item": CanvasItem
@@ -33,7 +33,7 @@ const NodeComponents = {
 
 export default function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [show, setShow] = useState(false);
 
   function toggleMenu() {
@@ -41,7 +41,7 @@ export default function Canvas() {
   }
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params: any) => setEdges((eds: Edges[]) => addEdge(params, eds)),
     [setEdges]
   );
 
@@ -55,13 +55,22 @@ export default function Canvas() {
         data: {
           fullName: ["John", "Doe"],
           location: ["Cape Town", "South Africa"],
-          dob: new Date(),
+          dob: buildDate(new Date()),
           image: src,
-          label: "Canvas-Node"
+          label: `Canvas-Node-${nodes.length + 1}`
         }
       }
       return [...nodes, node];
     });
+  }
+
+  async function saveNodes() {
+    try {
+      let response = await fetch("/api", { method: "POST", body: JSON.stringify({ user_id: '9b1b7bdb-6ca5-40af-8e37-98bc8cee22eb', nodes: nodes, edges: edges }) })
+      console.log(await response.json())
+    } catch (error) {
+
+    }
   }
 
   function getMenuItems() {
@@ -80,8 +89,26 @@ export default function Canvas() {
     return result;
   }
 
+  useEffect(() => {
+    let local_nodes = localStorage.getItem("nodes")
+    let local_edges = localStorage.getItem("edges")
+    if (local_nodes) {
+      setNodes(JSON.parse(local_nodes))
+    }
+    if (local_edges) {
+      setEdges(JSON.parse(local_edges))
+    }
+
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("nodes", JSON.stringify(nodes))
+    localStorage.setItem("edges", JSON.stringify(edges))
+  }, [nodes, edges])
+  const {data: session, status} = useSession()
   return (
-    <div className={styles.canvas}>
+    <div className={styles.canvas} onClick={() => signOut()}>
+      {JSON.stringify(session)}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -94,10 +121,12 @@ export default function Canvas() {
         <Panel>
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
+          <SaveButton saveNodes={saveNodes} />
         </Panel>
         <MiniMap className={styles.controls} />
         <Background variant={BackgroundVariant.Dots} gap={15} size={2} />
       </ReactFlow>
+
     </div>
   );
 }

@@ -7,7 +7,7 @@ export type Position = {
 export type Data = {
     fullName: [string, string];
     location: [string, string];
-    dob: Date;
+    dob: string;
     image: StaticImageData | string;
     label: string;
 };
@@ -18,3 +18,11 @@ export type Nodes = {
     type: string;
     data: Data;
 };
+
+export type Edges = {
+    id: string;
+    source: string;
+    sourceHandle: string;
+    target: string;
+    targetHandle: string;
+}

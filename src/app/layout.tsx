@@ -1,15 +1,20 @@
-import "./globals.css";
+// in app/layout.tsx
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body>
-        {children}
-      </body>
-    </html>
-  );
+import { getSession } from "@/auth"
+import Providers from "./providers"
+
+// THIS WILL WORK
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+    const session = await getSession()
+
+    return (
+        <html lang="en">
+            <body>
+                <Providers session={session}>
+                    {children}
+                </Providers>
+            </body>
+        </html>
+    )
 }

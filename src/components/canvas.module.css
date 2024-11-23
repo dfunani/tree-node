@@ -46,3 +46,9 @@
     color: #666;
     /* Light theme or adjust color */
 }
+
+.node-buttons{
+    display: flex;
+    justify-content: flex-start;
+    gap: 5px;
+  }
