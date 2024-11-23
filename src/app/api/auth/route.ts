@@ -1,5 +1,6 @@
 import { MockPostData } from "@/tests/mock";
 import { MongoClient } from "mongodb";
+import { redirect } from "next/navigation";
 
 
 async function connect() {
@@ -42,13 +43,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    console.log(await request.body)
-    // let db = await connect();
-    // let collection = db.collection("users");
-    // let response = await request.json()
-    // let document = await collection.updateOne({ user_id: response.user_id }, { $set: response }, { upsert: true })
-    return Response.json({ Message: "document" });
+    // let response = request
+    let response = await request.json()
+    let db = await connect();
+    let collection = db.collection("users");
+
+    let one = await collection.findOne({username: response.username})
+    if (one){
+        redirect("/")
+    }
+    
+    let document = await collection.updateOne({ username: response.username }, { $set: response }, { upsert: true })
+    return Response.json({ Message: document });
   } catch (error) {
-    return Response.json({ Message: `MongoDB Client Error${error}` });
+    return Response.json({ Message: `User Error: ${error}` });
   }
 }
