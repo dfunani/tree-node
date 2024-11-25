@@ -21,11 +21,11 @@ function Login() {
                     <input className={styles.input} aria-label="Username" type="email" placeholder="Email" />
                     <input className={styles.input} aria-label="Password" type="password" placeholder="Password" />
                     <button className={styles.button} onClick={() => {
-          signIn("credentials");
-        }} type="button">Login</button>
+                        signIn("credentials");
+                    }} type="button">Login</button>
+                    <button className={styles.button}  onClick={() => router.push("/auth")}>Register</button>
                 </form>
             </div>
-            <button onClick={() => router.push("/auth")}>Register</button>
         </div>
     );
 }
