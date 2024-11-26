@@ -1,12 +1,13 @@
 // in app/layout.tsx
 
-import { getSession } from "@/auth"
+import { getServerSession } from "next-auth"
 import Providers from "./providers"
+import "@/src/app/globals.css"
 
 // THIS WILL WORK
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-    const session = await getSession()
+    const session = await getServerSession()
 
     return (
         <html lang="en">

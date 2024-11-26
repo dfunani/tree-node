@@ -25,7 +25,8 @@ import { Nodes, Position, Edges } from "@/public/utils/types";
 import { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
 import SaveButton from "@/src/components/save-button";
-import { signOut, useSession } from "next-auth/react";
+import { signOut, useSession} from "next-auth/react";
+import LogoutButton from "./logout-button";
 
 const NodeComponents = {
   "Canvas-Item": CanvasItem
@@ -107,7 +108,7 @@ export default function Canvas() {
   }, [nodes, edges])
   const {data: session, status} = useSession()
   return (
-    <div className={styles.canvas} onClick={() => signOut()}>
+    <div className={styles.canvas}>
       {JSON.stringify(session)}
       <ReactFlow
         nodes={nodes}
@@ -119,6 +120,7 @@ export default function Canvas() {
       >
         <Controls className={styles.controls} />
         <Panel>
+          <LogoutButton/>
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
           <SaveButton saveNodes={saveNodes} />

@@ -1,72 +1,102 @@
 /* Dark Theme */
 .menu-button {
-    background-color: var(--background);
-    color: var(--content);
-    border: none;
-    border-radius: 5px;
-    padding: 10px 15px;
-    cursor: auto;
-    transition: background-color 0.3s ease-in-out;
+  background-color: var(--background);
+  color: var(--content);
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: auto;
+  transition: background-color 0.3s ease-in-out;
 
-    position: fixed;
-    top: 30px;
-    right: 30px;
+  position: fixed;
+  top: 30px;
+  right: 30px;
 }
 
 .menu-button:hover {
-    background-color: var(--foreground);
-    /* display: block; */
+  background-color: var(--foreground);
+  /* display: block; */
 }
+
 .save-pill {
-    position: fixed;
-    top: 30px;
-    left: 50%;
-    width: 50px; /* Adjust width as needed */
-    height: 50px;
-    border-radius: 50%; /* Circle shape */
-    background-color: var(--background); /* Green */
-    color: var(--content);
-    border: none;
-    cursor: pointer;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
-    display: flex; /* Center icon and text vertically and horizontally */
-    justify-content: center;
-    align-items: center;
-    transition: width 0.1s ease-in-out;
-  }
-  
-  .save-pill-icon {
-    width: 20px; /* Adjust icon size */
-    height: 20px; /* Adjust icon size */
-  }
-  
-  .save-pill-text {
-    display: none; /* Initially hide text */
-    font-size: 0.8em; /* Adjust font size */
-    margin-left: 5px; /* Adjust spacing between icon and text */
-  }
-  
-  .save-pill:hover {
-    width: 100px;
-    border: none;
-    /* padding: 10px 20px; */
-    text-align: center;
-    text-decoration: none;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 16px;
-    background-color: var(--foreground); /* Darken background color on hover (optional) */
-  }
-  
-  .save-pill:hover .save-pill-text {
-    display: block; /* Show text on hover */
-    font-size: 15px;
+  top: 30px;
+  left: 50%;
+}
+.logout-pill{
+  top: 30px;
+  left: 30px;
 
-  }
+}
 
-  
+.save-pill,
+.logout-pill {
+  position: fixed;
+  width: 50px;
+  /* Adjust width as needed */
+  height: 50px;
+  border-radius: 50%;
+  /* Circle shape */
+  background-color: var(--background);
+  /* Green */
+  color: var(--content);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  /* Center icon and text vertically and horizontally */
+  justify-content: center;
+  align-items: center;
+  transition: width 0.1s ease-in-out;
+}
 
-  /* .save-pill:hover .save-pill-icon {
+.save-pill-icon, .logout-pill-icon {
+  width: 20px;
+  /* Adjust icon size */
+  height: 20px;
+  /* Adjust icon size */
+}
+
+.save-pill-text{
+  display: none;
+  /* Initially hide text */
+  font-size: 0.8em;
+  /* Adjust font size */
+  margin-left: 5px;
+  /* Adjust spacing between icon and text */
+}
+
+.logout-pill-text{
+  display: none;
+  /* Initially hide text */
+  font-size: 0.8em;
+  /* Adjust font size */
+  margin-right: 5px;
+  /* Adjust spacing between icon and text */
+}
+
+.save-pill:hover ,
+.logout-pill:hover{
+  width: 100px;
+  border: none;
+  /* padding: 10px 20px; */
+  text-align: center;
+  text-decoration: none;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;
+  background-color: var(--foreground);
+  /* Darken background color on hover (optional) */
+}
+
+.save-pill:hover .save-pill-text, .logout-pill:hover .logout-pill-text {
+  display: block;
+  /* Show text on hover */
+  font-size: 15px;
+
+}
+
+
+
+/* .save-pill:hover .save-pill-icon {
     display: block;
   } */
-  
