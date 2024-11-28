@@ -26,3 +26,13 @@ export type Edges = {
     target: string;
     targetHandle: string;
 }
+
+export type Regsitration = {
+    email: string;
+    password: string;
+    name: string;
+    surname: string;
+    dob: Date | null;
+    city: string;
+    country: string;
+  };

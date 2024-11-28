@@ -52,27 +52,29 @@ function Login() {
           )
         }
       />
-      <button
-        className={styles.button}
-        onClick={async () => {
-          let response = await signIn("credentials", {
-            ...credentials,
-            redirect: false,
-          });
-          if (!response?.ok) {
-            router.push("/auth/register");
-          } else router.push("/");
-        }}
-        type="button"
-      >
-        Login
-      </button>
-      <button
-        className={styles.button}
-        onClick={() => router.push("/auth/register")}
-      >
-        Register
-      </button>
+      <div>
+        <button
+          className={styles.button}
+          onClick={async () => {
+            let response = await signIn("credentials", {
+              ...credentials,
+              redirect: false,
+            });
+            if (!response?.ok) {
+              router.push("/auth/register");
+            } else router.push("/");
+          }}
+          type="button"
+        >
+          Login
+        </button>
+        <button
+          className={styles.button}
+          onClick={() => router.push("/auth/register")}
+        >
+          Register
+        </button>
+      </div>
     </div>
   );
 }

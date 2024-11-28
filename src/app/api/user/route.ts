@@ -1,11 +1,11 @@
+import Security from "@/public/utils/cryptography";
+import { Regsitration } from "@/public/utils/types";
 import { MockPostData } from "@/tests/mock";
 import { MongoClient } from "mongodb";
 import { redirect } from "next/navigation";
 
-
 async function connect() {
-  const uri =
-    `mongodb+srv://${process.env.username}:${process.env.password}@${process.env.db_host}/?retryWrites=true&w=majority&appName=${process.env.db_name}`;
+  const uri = `mongodb+srv://${process.env.username}:${process.env.password}@${process.env.db_host}/?retryWrites=true&w=majority&appName=${process.env.db_name}`;
   let db_name = "tree_node";
 
   const client = new MongoClient(uri);
@@ -31,11 +31,13 @@ export async function GET(request: Request) {
     let db = await connect();
     let collection = db.collection("nodes");
     if (request.body && "user_id" in request.body) {
-      let id = request.body['user_id']
-      let response = await collection.findOne({ user_id: id })
+      let id = request.body["user_id"];
+      let response = await collection.findOne({ user_id: id });
       return Response.json({ Message: response });
     }
-    return Response.json({ Message: [{ user_id: null, nodes: [], edges: [] }] });
+    return Response.json({
+      Message: [{ user_id: null, nodes: [], edges: [] }],
+    });
   } catch (error) {
     return Response.json({ Message: `MongoDB Client Error${error}` });
   }
@@ -43,19 +45,40 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    // let response = request
-    let response = await request.json()
+    let response = await request.json();
+    console.log(response);
     let db = await connect();
     let collection = db.collection("users");
 
-    let one = await collection.findOne({username: response.username})
-    if (one){
-        redirect("/")
+    let user = await collection.findOne({ email: response.email });
+    if (user) {
+      return Response.json(
+        { Message: "User Already Exists" },
+        {
+          status: 400,
+        }
+      );
     }
-    
-    let document = await collection.updateOne({ username: response.username }, { $set: response }, { upsert: true })
-    return Response.json({ Message: document });
+
+    response.password = new Security().encrypt(response.password)
+
+    let document = await collection.updateOne(
+      { email: response.email },
+      { $set: response },
+      { upsert: true }
+    );
+    return Response.json(
+      { Message: document },
+      {
+        status: 200,
+      }
+    );
   } catch (error) {
-    return Response.json({ Message: `User Error: ${error}` });
+    return Response.json(
+      { Message: `User Error: ${error}` },
+      {
+        status: 500,
+      }
+    );
   }
 }

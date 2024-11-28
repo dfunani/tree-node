@@ -1,34 +1,32 @@
 "use client";
+import { Regsitration } from "@/public/utils/types";
+import { validateEmail, validatePassword } from "@/public/utils/validators";
 import styles from "@/src/app/auth/[access]/auth.module.css";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 
-type Regsitration = {
-  email: string;
-  password: string;
-  name: string;
-  surname: string;
-  dob: string;
-  city: string;
-  country: string;
-};
 export function Register() {
   const router = useRouter();
   const [submit, setSubmit] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>("null");
+  const [error, setError] = useState<string | null>(null);
   const [registration, setRegistration] = useState<Regsitration>({
     email: "",
     password: "",
     name: "",
     surname: "",
-    dob: "",
+    dob: null,
     city: "",
     country: "",
   });
 
   function handleSubmit() {
-    if (registration.email && registration.password) setSubmit(true);
-    else setError("Please Provide Valid Email and Password.");
+    if (
+      validateEmail(registration.email) &&
+      validatePassword(registration.password)
+    ) {
+      setError(null);
+      setSubmit(true);
+    } else setError("Please Provide Valid Email and Password.");
   }
 
   function handleUpdateRegistration(key: string, value: string) {
@@ -37,22 +35,29 @@ export function Register() {
     });
   }
   async function handleRegistration() {
-    let response = await fetch("/api/auth", {
+    let response = await fetch("/api/user", {
       method: "POST",
       body: JSON.stringify(registration),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-    if (response.ok) {
+    if (response.ok || response.status == 400) {
       router.push("/");
-    } else router.push("/auth/register");
+    } else {
+      let result = await response.json();
+      setError(result.message);
+    }
   }
   return (
     <div className={styles["login-container"]}>
-      <h2 className={styles.h2}>Register</h2>
+      <h2 className={styles.h2}>{submit ? "User Information" : "Register"}</h2>
       {!submit && (
         <div className={styles["form"]}>
           <input
             className={styles.input}
             aria-label="Email"
+            // autoSave="off"
             type="email"
             placeholder="Email"
             value={registration.email}
@@ -85,7 +90,7 @@ export function Register() {
           </button>
         </div>
       )}
-      <p>{error}</p>
+      {error && <p className={styles.error}>{error}</p>}
 
       {submit && (
         <div className={styles["form"]}>
