@@ -44,4 +44,12 @@ export default class Security {
     const decrypted = decipher.update(encryptedText);
     return Buffer.concat([decrypted, decipher.final()]).toString();
   }
+
+  hash(message: string): string {
+    const hash = crypto
+      .createHash("sha256")
+      .update(message, "utf8")
+      .digest("hex");
+    return hash;
+  }
 }

@@ -1,14 +1,10 @@
 "use client";
 
+import { Logins } from "@/public/utils/types";
 import styles from "@/src/app/auth/[access]/auth.module.css";
 import { getProviders, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
-
-type Logins = {
-  email: string;
-  password: string;
-};
 
 function Login() {
   const router = useRouter();
@@ -59,7 +55,9 @@ function Login() {
             let response = await signIn("credentials", {
               ...credentials,
               redirect: false,
+              callbackUrl: "/"
             });
+            
             if (!response?.ok) {
               router.push("/auth/register");
             } else router.push("/");

@@ -1,5 +1,5 @@
 "use client";
-import { Regsitration } from "@/public/utils/types";
+import { Regsitrations, ServerResponse } from "@/public/utils/types";
 import { validateEmail, validatePassword } from "@/public/utils/validators";
 import styles from "@/src/app/auth/[access]/auth.module.css";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ export function Register() {
   const router = useRouter();
   const [submit, setSubmit] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [registration, setRegistration] = useState<Regsitration>({
+  const [registration, setRegistration] = useState<Regsitrations>({
     email: "",
     password: "",
     name: "",
@@ -30,7 +30,7 @@ export function Register() {
   }
 
   function handleUpdateRegistration(key: string, value: string) {
-    setRegistration((prevRegistration: Regsitration) => {
+    setRegistration((prevRegistration: Regsitrations) => {
       return { ...prevRegistration, [key]: value };
     });
   }
@@ -45,7 +45,7 @@ export function Register() {
     if (response.ok || response.status == 400) {
       router.push("/");
     } else {
-      let result = await response.json();
+      let result: ServerResponse = await response.json();
       setError(result.message);
     }
   }
