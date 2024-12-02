@@ -1,7 +1,7 @@
 import Image, { StaticImageData } from "next/image";
 import { DragEvent } from "react";
 
-import { Position } from "@/public/utils/types";
+import { Position } from "@/src/public/utils/types";
 import styles from "@/src/components/dropdown.module.css";
 
 type Props = {

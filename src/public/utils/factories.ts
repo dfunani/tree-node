@@ -1,12 +1,12 @@
 import { StaticImageData } from "next/image";
-import female_dark_1 from "@/public/images/menu-items/female-dark-1.png";
-import female_dark_2 from "@/public/images/menu-items/female-dark-2.png";
-import female_light_1 from "@/public/images/menu-items/female-light-1.png";
-import female_light_2 from "@/public/images/menu-items/female-light-2.png";
-import male_dark_1 from "@/public/images/menu-items/male-dark-1.png";
-import male_dark_2 from "@/public/images/menu-items/male-dark-2.png";
-import male_light_1 from "@/public/images/menu-items/male-light-1.png";
-import male_light_2 from "@/public/images/menu-items/male-light-2.png";
+import female_dark_1 from "@/src/public/images/menu-items/female-dark-1.png";
+import female_dark_2 from "@/src/public/images/menu-items/female-dark-2.png";
+import female_light_1 from "@/src/public/images/menu-items/female-light-1.png";
+import female_light_2 from "@/src/public/images/menu-items/female-light-2.png";
+import male_dark_1 from "@/src/public/images/menu-items/male-dark-1.png";
+import male_dark_2 from "@/src/public/images/menu-items/male-dark-2.png";
+import male_light_1 from "@/src/public/images/menu-items/male-light-1.png";
+import male_light_2 from "@/src/public/images/menu-items/male-light-2.png";
 
 type ImageFactoryResponse = {
     [key: string]: StaticImageData;

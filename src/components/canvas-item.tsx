@@ -2,10 +2,10 @@ import Image from "next/image";
 import styles from "@/src/components/canvas.module.css";
 import { Handle, Position } from "@xyflow/react";
 import { v4 as uuid4 } from "uuid";
-import { Data } from "@/public/utils/types";
+import { Data } from "@/src/public/utils/types";
 import Modal from "@/src/components/modal";
 import { useEffect, useState } from "react";
-import { GlobalProvider, useGlobalContext } from "@/public/utils/context";
+import { GlobalProvider, useGlobalContext } from "@/src/public/utils/context";
 
 
 type Props = {

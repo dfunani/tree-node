@@ -20,22 +20,30 @@ import styles from "@/src/components/canvas.module.css";
 import MenuButton from "@/src/components/menu-button";
 import MenuDropdown from "@/src/components/menu-dropdown";
 import MenuItem from "@/src/components/menu-item";
-import { buildDate, generateImages } from "@/public/utils/factories";
-import { Nodes, Position, Edges } from "@/public/utils/types";
+import { buildDate, generateImages } from "@/src/public/utils/factories";
+import { Nodes, Position, Edges } from "@/src/public/utils/types";
 import { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
 import SaveButton from "@/src/components/save-button";
-import { signOut, useSession} from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import LogoutButton from "./logout-button";
+import Error from "next/error";
 
 const NodeComponents = {
-  "Canvas-Item": CanvasItem
-}
+  "Canvas-Item": CanvasItem,
+};
 
 export default function Canvas() {
+  const { data: session } = useSession();
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [show, setShow] = useState(false);
+
+  if (!session || !session?.user?.email) {
+    return <Error statusCode={403} />;
+  }
+
+  const user_id = session.user.email
 
   function toggleMenu() {
     setShow((prev: Boolean) => !prev);
@@ -48,7 +56,7 @@ export default function Canvas() {
 
   function addNode(position: Position, src: StaticImageData | string) {
     setNodes((nodes: Nodes[]) => {
-      let id = uuid4().toString()
+      let id = uuid4().toString();
       let node: Nodes = {
         id: id,
         position: position,
@@ -58,20 +66,25 @@ export default function Canvas() {
           location: ["Cape Town", "South Africa"],
           dob: buildDate(new Date()),
           image: src,
-          label: `Canvas-Node-${nodes.length + 1}`
-        }
-      }
+          label: `Canvas-Node-${nodes.length + 1}`,
+        },
+      };
       return [...nodes, node];
     });
   }
 
   async function saveNodes() {
     try {
-      let response = await fetch("/api", { method: "POST", body: JSON.stringify({ user_id: '9b1b7bdb-6ca5-40af-8e37-98bc8cee22eb', nodes: nodes, edges: edges }) })
-      console.log(await response.json())
-    } catch (error) {
-
-    }
+      let response = await fetch("/api", {
+        method: "POST",
+        body: JSON.stringify({
+          user_id: user_id,
+          nodes: nodes,
+          edges: edges,
+        }),
+      });
+      console.log(await response.json());
+    } catch (error) {}
   }
 
   function getMenuItems() {
@@ -91,22 +104,20 @@ export default function Canvas() {
   }
 
   useEffect(() => {
-    let local_nodes = localStorage.getItem("nodes")
-    let local_edges = localStorage.getItem("edges")
+    let local_nodes = localStorage.getItem("nodes");
+    let local_edges = localStorage.getItem("edges");
     if (local_nodes) {
-      setNodes(JSON.parse(local_nodes))
+      setNodes(JSON.parse(local_nodes));
     }
     if (local_edges) {
-      setEdges(JSON.parse(local_edges))
+      setEdges(JSON.parse(local_edges));
     }
-
-  }, [])
+  }, []);
 
   useEffect(() => {
-    localStorage.setItem("nodes", JSON.stringify(nodes))
-    localStorage.setItem("edges", JSON.stringify(edges))
-  }, [nodes, edges])
-  const {data: session, status} = useSession()
+    localStorage.setItem("nodes", JSON.stringify(nodes));
+    localStorage.setItem("edges", JSON.stringify(edges));
+  }, [nodes, edges]);
   return (
     <div className={styles.canvas}>
       {JSON.stringify(session)}
@@ -120,7 +131,7 @@ export default function Canvas() {
       >
         <Controls className={styles.controls} />
         <Panel>
-          <LogoutButton/>
+          <LogoutButton />
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
           <SaveButton saveNodes={saveNodes} />
@@ -128,7 +139,6 @@ export default function Canvas() {
         <MiniMap className={styles.controls} />
         <Background variant={BackgroundVariant.Dots} gap={15} size={2} />
       </ReactFlow>
-
     </div>
   );
 }

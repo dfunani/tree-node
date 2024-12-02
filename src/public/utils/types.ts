@@ -27,7 +27,7 @@ export type Edges = {
   targetHandle: string;
 };
 
-export type Regsitrations = {
+export type Registrations = {
   email: string;
   password: string;
   name: string;
@@ -42,7 +42,7 @@ export type Logins = {
   password: string;
 };
 
-export type Users = Regsitrations & {
+export type Users = Registrations & {
   id: string;
 };
 

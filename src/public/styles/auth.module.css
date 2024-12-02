@@ -28,6 +28,12 @@ display: grid;
   border-radius: 3px;
 }
 
+.section{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
 
 .button {
   background-color: var(--background);
@@ -36,7 +42,7 @@ display: grid;
   border-radius: 3px;
   border: none;
   cursor: pointer;
-
+  width: 40%;
 }
 .button:hover{
   border: solid 1px var(--foreground);

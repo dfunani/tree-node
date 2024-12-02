@@ -1,7 +1,7 @@
 // in app/api/auth/[...nextauth]/route.ts
 import Credentials from "next-auth/providers/credentials";
 import NextAuth from "next-auth";
-import User from "@/public/models/users";
+import User from "@/src/public/models/users";
 
 const authOptions = {
   providers: [

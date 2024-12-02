@@ -1,16 +1,17 @@
 // in app/providers.tsx
 
-"use client"
+"use client";
 
-import type { Session } from "next-auth"
-import { SessionProvider } from "next-auth/react"
+import { ReactNode } from "react";
+import type { Session } from "next-auth";
+import { SessionProvider } from "next-auth/react";
 
-// THIS WILL WORK
-
-export default function Providers({ session, children }: { session: Session | null, children: React.ReactNode }) {
-    return (
-        <SessionProvider session={session}>
-            {children}
-        </SessionProvider>
-    )
+type Props = {
+  session: Session | null;
+  children: ReactNode;
+};
+export default function Providers(props: Props) {
+  return (
+    <SessionProvider session={props.session}>{props.children}</SessionProvider>
+  );
 }

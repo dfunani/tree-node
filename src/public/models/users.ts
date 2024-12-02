@@ -1,13 +1,17 @@
 import { connect } from "../utils/database";
 import Security from "../utils/cryptography";
-import { Logins, Users } from "../utils/types";
-
-
+import { Logins, Registrations, Users } from "../utils/types";
 
 export default class User {
-  static async getUser(credentials: Logins): Promise<Users | null> {
+  static async getCollection() {
     let db = await connect();
     let collection = db.collection("users");
+
+    return collection;
+  }
+
+  static async getUser(credentials: Logins): Promise<Users | null> {
+    const collection = await User.getCollection();
 
     const client = new Security();
     credentials.email = client.encrypt(credentials.email);
@@ -30,5 +34,21 @@ export default class User {
       city: response.city,
       country: response.country,
     };
+  }
+
+  static async createUser(registration: Registrations) {
+    let collection = await User.getCollection();
+
+    const client = new Security();
+    registration.email = client.encrypt(registration.email);
+    registration.password = client.hash(registration.password);
+
+    let existing_user = await collection.findOne({ email: registration.email });
+    if (existing_user) {
+      return null;
+    }
+
+    let document = await collection.insertOne(registration);
+    return document;
   }
 }

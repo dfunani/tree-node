@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from "@/src/components/modal.module.css";
-import { useGlobalContext } from '@/public/utils/context';
+import { useGlobalContext } from '@/src/public/utils/context';
 
 type Props = {
 
