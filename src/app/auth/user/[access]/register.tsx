@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import Login from "@/src/components/login";
 import Registration from "@/src/components/registration";
 
-import { Registrations, ServerResponse } from "@/src/public/utils/types";
+import { Registrations } from "@/src/public/utils/types";
 import { validateEmail, validatePassword } from "@/src/public/utils/validators";
 
 export default function Page() {
@@ -23,6 +23,7 @@ export default function Page() {
     dob: null,
     city: "",
     country: "",
+    image: ""
   });
 
   function handleLogin() {
@@ -40,6 +41,7 @@ export default function Page() {
       return { ...prevRegistration, [key]: value };
     });
   }
+
   async function handleRegistration() {
     let response = await fetch("/api/auth/user", {
       method: "POST",
@@ -48,11 +50,11 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     });
+
     if (response.ok || response.status == 409) {
-      router.push(`/auth/user/login?error=${response.statusText}`);
+      router.push(`/auth/user/login?resolve=${response.statusText}`);
     } else {
-      let result: ServerResponse = await response.json();
-      setError(result.message);
+      setError("Registration Failed. Please Try Again Later.");
     }
   }
   return (

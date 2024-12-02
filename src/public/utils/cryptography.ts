@@ -1,12 +1,5 @@
 import * as crypto from "crypto";
 
-function splitEncryptedText(encryptedText: string) {
-  return {
-    ivString: encryptedText.slice(0, 32),
-    encryptedDataString: encryptedText.slice(32),
-  };
-}
-
 export default class Security {
   encoding: BufferEncoding = "hex";
 
@@ -34,10 +27,8 @@ export default class Security {
   }
 
   decrypt(cipherText: string) {
-    const { encryptedDataString, ivString } = splitEncryptedText(cipherText);
-
-    const iv = Buffer.from(ivString, this.encoding);
-    const encryptedText = Buffer.from(encryptedDataString, this.encoding);
+    const iv = Buffer.alloc(16, 0);
+    const encryptedText = Buffer.from(cipherText, this.encoding);
 
     const decipher = crypto.createDecipheriv("aes-256-cbc", this.key, iv);
 

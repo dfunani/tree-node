@@ -33,6 +33,9 @@ export default class User {
       dob: response.dob,
       city: response.city,
       country: response.country,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+      image: response.image
     };
   }
 
@@ -48,7 +51,12 @@ export default class User {
       return null;
     }
 
-    let document = await collection.insertOne(registration);
+    let now = new Date();
+    let document = await collection.insertOne({
+      ...registration,
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    });
     return document;
   }
 }

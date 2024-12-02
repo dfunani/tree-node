@@ -22,7 +22,7 @@ import MenuDropdown from "@/src/components/menu-dropdown";
 import MenuItem from "@/src/components/menu-item";
 import { buildDate, generateImages } from "@/src/public/utils/factories";
 import { Nodes, Position, Edges } from "@/src/public/utils/types";
-import { StaticImageData } from "next/image";
+import Image, { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
 import SaveButton from "@/src/components/save-button";
 import { signOut, useSession } from "next-auth/react";
@@ -131,7 +131,8 @@ export default function Canvas() {
       >
         <Controls className={styles.controls} />
         <Panel>
-          <LogoutButton />
+          {!session?.user?.image ? <img src={session?.user?.image} alt="Profile-Picture"/> : <div>{session.user.name?.toUpperCase()}</div>}
+          {<MenuDropdown><LogoutButton /></MenuDropdown>}
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
           <SaveButton saveNodes={saveNodes} />

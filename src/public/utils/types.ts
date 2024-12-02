@@ -35,6 +35,7 @@ export type Registrations = {
   dob: Date | null;
   city: string;
   country: string;
+  image: string ;
 };
 
 export type Logins = {
@@ -44,6 +45,8 @@ export type Logins = {
 
 export type Users = Registrations & {
   id: string;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type ServerResponse = {

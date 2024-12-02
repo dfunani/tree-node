@@ -11,14 +11,15 @@ import Login from "@/src/components/login";
 
 const Errors = {
   Conflict: "User Already Exists.",
-  Invalid: "Invalid Credentials Provided."
+  Invalid: "Invalid Credentials Provided.",
+  Created: "Successfully Registered",
 };
 
 export default function Page() {
   const router = useRouter();
   let query = useSearchParams();
-  let error = query.get("error");
-  let errorText = handleErrors(error);
+  let resolve = query.get("resolve");
+  let errorText = handleErrors(resolve);
 
   const [credentials, setCredentials] = useState<Logins>({
     email: "",
@@ -30,7 +31,9 @@ export default function Page() {
       case "Conflict":
         return Errors[error];
       case "Invalid":
-          return Errors[error];
+        return Errors[error];
+      case "Created":
+        return Errors[error];
       default:
         return null;
     }
@@ -50,7 +53,7 @@ export default function Page() {
     });
 
     if (!response?.ok) {
-      router.push("/auth/user/login?error=Invalid");
+      router.push("/auth/user/login?resolve=Invalid");
     } else router.push("/");
   }
 
