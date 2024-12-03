@@ -28,6 +28,7 @@ import SaveButton from "@/src/components/save-button";
 import { signOut, useSession } from "next-auth/react";
 import LogoutButton from "./logout-button";
 import Error from "next/error";
+import ProfilePicture from "./profile-picture";
 
 const NodeComponents = {
   "Canvas-Item": CanvasItem,
@@ -43,7 +44,7 @@ export default function Canvas() {
     return <Error statusCode={403} />;
   }
 
-  const user_id = session.user.email
+  const user_id = session.user.email;
 
   function toggleMenu() {
     setShow((prev: Boolean) => !prev);
@@ -131,8 +132,12 @@ export default function Canvas() {
       >
         <Controls className={styles.controls} />
         <Panel>
-          {!session?.user?.image ? <img src={session?.user?.image} alt="Profile-Picture"/> : <div>{session.user.name?.toUpperCase()}</div>}
-          {<MenuDropdown><LogoutButton /></MenuDropdown>}
+          <ProfilePicture image={session.user.image ?? ""} name={session.user.name ?? ""} />
+          {show && (
+            <MenuDropdown>
+              <LogoutButton />
+            </MenuDropdown>
+          )}
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
           <SaveButton saveNodes={saveNodes} />
