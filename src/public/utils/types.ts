@@ -35,7 +35,7 @@ export type Registrations = {
   dob: Date | null;
   city: string;
   country: string;
-  image: string ;
+  image: string;
 };
 
 export type Logins = {
@@ -43,11 +43,13 @@ export type Logins = {
   password: string;
 };
 
-export type Users = Registrations & {
+export type Users = Pick<Registrations, "email" | "password"> & {
   id: string;
   createdAt: string;
   updatedAt: string;
 };
+
+export type Profile = Omit<Registrations, "email" | "password">;
 
 export type ServerResponse = {
   message: any;

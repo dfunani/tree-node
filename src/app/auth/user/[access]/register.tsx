@@ -54,6 +54,7 @@ export default function Page() {
     if (response.ok || response.status == 409) {
       router.push(`/auth/user/login?resolve=${response.statusText}`);
     } else {
+      console.log(await response.json())
       setError("Registration Failed. Please Try Again Later.");
     }
   }

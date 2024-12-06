@@ -8,10 +8,10 @@ type Props = {
 export default function ProfilePicture(props: Props) {
   return (
     <button className={styles["profile-pill"]} onClick={() => signOut()}>
-      {!props.image ? (
+      {props.image ? (
         <img src={props.image} alt="Profile-Picture" />
       ) : (
-        <div>{props.name.toUpperCase()}</div>
+        <div>{props.name[0].toUpperCase()}</div>
       )}
     </button>
   );

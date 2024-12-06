@@ -1,6 +1,8 @@
 import { connect } from "../utils/database";
 import Security from "../utils/cryptography";
-import { Logins, Registrations, Users } from "../utils/types";
+import { Logins, Profile, Registrations, Users } from "../utils/types";
+import Registration from "@/src/components/registration";
+import { ObjectId } from "mongodb";
 
 export default class User {
   static async getCollection() {
@@ -28,14 +30,27 @@ export default class User {
       id: response._id.toString(),
       email: response.email,
       password: response.password,
+      createdAt: response.createdAt,
+      updatedAt: response.updatedAt,
+    };
+  }
+
+  static async getProfile(id: string): Promise<Profile | null> {
+    const collection = await User.getCollection();
+
+    let response = await collection.findOne({
+      _id: ObjectId.createFromHexString(id),
+    });
+
+    if (!response) return null;
+
+    return {
       name: response.name,
       surname: response.surname,
       dob: response.dob,
       city: response.city,
       country: response.country,
-      createdAt: response.createdAt,
-      updatedAt: response.updatedAt,
-      image: response.image
+      image: response.image,
     };
   }
 

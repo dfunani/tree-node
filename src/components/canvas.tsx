@@ -39,6 +39,7 @@ export default function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [show, setShow] = useState(false);
+  const [profile, setProfile] = useState(null)
 
   if (!session || !session?.user?.email) {
     return <Error statusCode={403} />;
@@ -104,6 +105,18 @@ export default function Canvas() {
     return result;
   }
 
+  function set_profile_locally(){
+    let local_profile = localStorage.getItem("profile");
+
+    if(local_profile)
+      {
+        return local_profile
+      }
+
+    // let response = await fetch(`/api/auth/user?id=${session?.user.id}`, {method: "GET"})
+    // localStorage.setItem("profile", {});
+       
+  }
   useEffect(() => {
     let local_nodes = localStorage.getItem("nodes");
     let local_edges = localStorage.getItem("edges");
@@ -113,6 +126,9 @@ export default function Canvas() {
     if (local_edges) {
       setEdges(JSON.parse(local_edges));
     }
+    // if (local_profile) {
+    //   setProfile(JSON.parse(local_profile));
+    // }
   }, []);
 
   useEffect(() => {
@@ -121,7 +137,7 @@ export default function Canvas() {
   }, [nodes, edges]);
   return (
     <div className={styles.canvas}>
-      {JSON.stringify(session)}
+      {JSON.stringify(session.user)}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -132,7 +148,10 @@ export default function Canvas() {
       >
         <Controls className={styles.controls} />
         <Panel>
-          <ProfilePicture image={session.user.image ?? ""} name={session.user.name ?? ""} />
+          <ProfilePicture
+            image={session.user.image ?? ""}
+            name={session.user.name ?? "H"}
+          />
           {show && (
             <MenuDropdown>
               <LogoutButton />
