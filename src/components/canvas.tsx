@@ -148,8 +148,8 @@ export default function Canvas() {
         <Controls className={styles.controls} />
         <Panel>
           <ProfilePicture
-            image={profile?.image ?? ""}
-            name={profile?.name ?? "H"}
+            image={profile?.image}
+            name={profile?.name}
           />
           {show && (
             <MenuDropdown>
