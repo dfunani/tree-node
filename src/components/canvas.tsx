@@ -21,7 +21,7 @@ import MenuButton from "@/src/components/menu-button";
 import MenuDropdown from "@/src/components/menu-dropdown";
 import MenuItem from "@/src/components/menu-item";
 import { buildDate, generateImages } from "@/src/public/utils/factories";
-import { Nodes, Position, Edges } from "@/src/public/utils/types";
+import { Nodes, Position, Edges, Profile } from "@/src/public/utils/types";
 import Image, { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
 import SaveButton from "@/src/components/save-button";
@@ -29,6 +29,7 @@ import { signOut, useSession } from "next-auth/react";
 import LogoutButton from "./logout-button";
 import Error from "next/error";
 import ProfilePicture from "./profile-picture";
+import { Session } from "next-auth";
 
 const NodeComponents = {
   "Canvas-Item": CanvasItem,
@@ -39,13 +40,11 @@ export default function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [show, setShow] = useState(false);
-  const [profile, setProfile] = useState(null)
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   if (!session || !session?.user?.email) {
     return <Error statusCode={403} />;
   }
-
-  const user_id = session.user.email;
 
   function toggleMenu() {
     setShow((prev: Boolean) => !prev);
@@ -80,7 +79,7 @@ export default function Canvas() {
       let response = await fetch("/api", {
         method: "POST",
         body: JSON.stringify({
-          user_id: user_id,
+          user_id: session?.user.id,
           nodes: nodes,
           edges: edges,
         }),
@@ -105,30 +104,31 @@ export default function Canvas() {
     return result;
   }
 
-  function set_profile_locally(){
+  async function set_profile_locally(id: string) {
     let local_profile = localStorage.getItem("profile");
 
-    if(local_profile)
-      {
-        return local_profile
-      }
+    if (local_profile) {
+      setProfile(JSON.parse(local_profile));
+      return;
+    }
 
-    // let response = await fetch(`/api/auth/user?id=${session?.user.id}`, {method: "GET"})
-    // localStorage.setItem("profile", {});
-       
+    let response = await fetch(`/api/auth/user?id=${id}`, { method: "GET" });
+    let profile = await response.json();
+    if (profile) {
+      localStorage.setItem("profile", JSON.stringify(profile.Message));
+      setProfile(profile.Message);
+    }
   }
   useEffect(() => {
     let local_nodes = localStorage.getItem("nodes");
     let local_edges = localStorage.getItem("edges");
+    set_profile_locally(session?.user.id);
     if (local_nodes) {
       setNodes(JSON.parse(local_nodes));
     }
     if (local_edges) {
       setEdges(JSON.parse(local_edges));
     }
-    // if (local_profile) {
-    //   setProfile(JSON.parse(local_profile));
-    // }
   }, []);
 
   useEffect(() => {
@@ -137,7 +137,6 @@ export default function Canvas() {
   }, [nodes, edges]);
   return (
     <div className={styles.canvas}>
-      {JSON.stringify(session.user)}
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -149,8 +148,8 @@ export default function Canvas() {
         <Controls className={styles.controls} />
         <Panel>
           <ProfilePicture
-            image={session.user.image ?? ""}
-            name={session.user.name ?? "H"}
+            image={profile?.image ?? ""}
+            name={profile?.name ?? "H"}
           />
           {show && (
             <MenuDropdown>

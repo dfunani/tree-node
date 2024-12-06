@@ -2,21 +2,19 @@
 import Credentials from "next-auth/providers/credentials";
 import NextAuth, { Account, Session, DefaultSession } from "next-auth";
 import User from "@/src/public/models/users";
-import { JWT } from "next-auth/jwt";
+import { DefaultJWT, JWT } from "next-auth/jwt";
 import Security from "@/src/public/utils/cryptography";
 import { AdapterUser } from "next-auth/adapters";
 import { Users } from "@/src/public/utils/types";
 
 type TokenProps = {
   token: JWT;
-  user: AdapterUser | User;
-  account: Account | null;
+  user: AdapterUser | User; // Remove the extra properties from the user object
 };
 
 type SessionProps = {
   session: Session;
   token: JWT;
-  user: AdapterUser;
 };
 
 declare module "next-auth" {
@@ -29,12 +27,11 @@ declare module "next-auth" {
       id: string;
     } & DefaultSession["user"];
   }
-}
 
-declare module "next-auth/adapters" {
-  interface AdapterUser {
-    createdAt: string;
-    updatedAt: string;
+  interface JWT extends DefaultJWT {
+    id: string;
+    isNewUser: boolean;
+    accessToken: string;
   }
 }
 
@@ -60,22 +57,24 @@ const authOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token }: TokenProps) {
-      // Persist the OAuth access_token and or the user id to the token right after signin
-      token.picture = null;
-      
+    async jwt({ token, user }: TokenProps) {
+      let client = new Security();
+      token.accessToken = client.hash("Hello World");
+      if (user && "updatedAt" in user && "createdAt" in user) {
+        token.id = user.id;
+        token.isNewUser = user.createdAt == user.updatedAt;
+      }
+
       return token;
     },
-    async session({ session, token, user }: SessionProps) {
-      // Send properties to the client, like an access_token and user id from a provider.
-      console.log(token)
+    async session({ session, token }: SessionProps) {
       const client = new Security();
       if (session.user?.email) {
         session.user.email = client.decrypt(session.user?.email);
       }
 
-      session.user.isNewUser = user?.createdAt == user?.updatedAt;
-      session.user.id = user?.id;
+      session.user.isNewUser = token?.isNewUser as boolean;
+      session.user.id = token.id as string;
 
       return session;
     },
