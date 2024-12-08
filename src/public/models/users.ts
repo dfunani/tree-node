@@ -22,7 +22,6 @@ export default class User {
       email: credentials.email,
       password: credentials.password,
     });
-
     if (!response) return null;
 
     return {

@@ -3,6 +3,7 @@ import NextAuth from "next-auth";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
 import { SessionProps, TokenProps } from "@/src/public/types/auth";
+import { Authorize } from "@/src/public/models/data_classes";
 
 const authOptions = {
   providers: [
@@ -21,7 +22,10 @@ const authOptions = {
         let user = await User.getUser(credentials);
         if (!user) return null;
 
-        return user;
+        let data = Authorize.safeParse(user);
+        if (!data.success) return null;
+
+        return data.data;
       },
     }),
   ],

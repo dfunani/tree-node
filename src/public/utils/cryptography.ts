@@ -15,7 +15,7 @@ export default class Security {
   }
 
   encrypt(plaintext: string): string {
-    const iv = Buffer.alloc(16, 0)
+    const iv = Buffer.alloc(16, 0);
     const cipher = crypto.createCipheriv("aes-256-cbc", this.key, iv);
 
     const encrypted = Buffer.concat([
@@ -23,20 +23,17 @@ export default class Security {
       cipher.final(),
     ]);
 
-    return Buffer.concat([iv, encrypted]).toString(this.encoding); // Combine IV and encrypted data
+    return Buffer.concat([encrypted]).toString(this.encoding); // Combine IV and encrypted data
   }
 
   decrypt(ciphertext: string): string {
     const data = Buffer.from(ciphertext, this.encoding);
-    const iv = Buffer.alloc(16, 0)
-    const encryptedText = data.subarray(16); // Extract the actual encrypted data
+    const iv = Buffer.alloc(16, 0);
+    // const encryptedText = data.subarray(16); // Extract the actual encrypted data
 
     const decipher = crypto.createDecipheriv("aes-256-cbc", this.key, iv);
 
-    const decrypted = Buffer.concat([
-      decipher.update(encryptedText),
-      decipher.final(),
-    ]);
+    const decrypted = Buffer.concat([decipher.update(data), decipher.final()]);
     return decrypted.toString("utf-8");
   }
 
