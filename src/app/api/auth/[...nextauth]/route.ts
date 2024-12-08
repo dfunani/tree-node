@@ -1,39 +1,8 @@
-// in app/api/auth/[...nextauth]/route.ts
 import Credentials from "next-auth/providers/credentials";
-import NextAuth, { Account, Session, DefaultSession } from "next-auth";
+import NextAuth from "next-auth";
 import User from "@/src/public/models/users";
-import { DefaultJWT, JWT } from "next-auth/jwt";
 import Security from "@/src/public/utils/cryptography";
-import { AdapterUser } from "next-auth/adapters";
-import { Users } from "@/src/public/utils/types";
-
-type TokenProps = {
-  token: JWT;
-  user: AdapterUser | User; // Remove the extra properties from the user object
-};
-
-type SessionProps = {
-  session: Session;
-  token: JWT;
-};
-
-declare module "next-auth" {
-  /**
-   * Returned by `useSession`, `getSession` and received as a prop on the `SessionProvider` React Context
-   */
-  interface Session extends DefaultSession {
-    user: {
-      isNewUser: boolean;
-      id: string;
-    } & DefaultSession["user"];
-  }
-
-  interface JWT extends DefaultJWT {
-    id: string;
-    isNewUser: boolean;
-    accessToken: string;
-  }
-}
+import { SessionProps, TokenProps } from "@/src/public/types/auth";
 
 const authOptions = {
   providers: [
@@ -58,18 +27,23 @@ const authOptions = {
   ],
   callbacks: {
     async jwt({ token, user }: TokenProps) {
-      let client = new Security();
-      token.accessToken = client.hash("Hello World");
+      if (token.email) {
+        const client = new Security();
+        token.accessToken = client.hash(token.email);
+      }
+
       if (user && "updatedAt" in user && "createdAt" in user) {
-        token.id = user.id;
         token.isNewUser = user.createdAt == user.updatedAt;
       }
 
+      if (token.id) token.id = user.id;
+
       return token;
     },
+
     async session({ session, token }: SessionProps) {
-      const client = new Security();
       if (session.user?.email) {
+        const client = new Security();
         session.user.email = client.decrypt(session.user?.email);
       }
 

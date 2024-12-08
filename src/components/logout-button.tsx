@@ -3,7 +3,15 @@ import { signOut } from "next-auth/react";
 
 export default function LogoutButton() {
   return (
-    <button className={styles["logout-pill"]} onClick={() => signOut()}>
+    <button
+      className={styles["logout-pill"]}
+      onClick={() => {
+        localStorage.removeItem("profile");
+        localStorage.removeItem("nodes");
+        localStorage.removeItem("edges");
+        signOut();
+      }}
+    >
       <span className={styles["logout-pill-text"]}>Exit</span>
       <svg
         xmlns="http://www.w3.org/2000/svg"

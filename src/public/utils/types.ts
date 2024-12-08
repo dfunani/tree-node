@@ -32,10 +32,10 @@ export type Registrations = {
   password: string;
   name: string;
   surname: string;
-  dob: Date | null;
+  dob: string;
   city: string;
   country: string;
-  image: string;
+  image: string | null;
 };
 
 export type Logins = {

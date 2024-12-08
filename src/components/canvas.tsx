@@ -40,7 +40,9 @@ export default function Canvas() {
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const [show, setShow] = useState(false);
+  const [showProfile, setshowProfile] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   if (!session || !session?.user?.email) {
     return <Error statusCode={403} />;
@@ -48,6 +50,9 @@ export default function Canvas() {
 
   function toggleMenu() {
     setShow((prev: Boolean) => !prev);
+  }
+  function toggleProfile() {
+    setshowProfile((prev: Boolean) => !prev);
   }
 
   const onConnect = useCallback(
@@ -76,7 +81,7 @@ export default function Canvas() {
 
   async function saveNodes() {
     try {
-      let response = await fetch("/api", {
+      let response = await fetch("/api/editor", {
         method: "POST",
         body: JSON.stringify({
           user_id: session?.user.id,
@@ -84,8 +89,13 @@ export default function Canvas() {
           edges: edges,
         }),
       });
-      console.log(await response.json());
-    } catch (error) {}
+      if (response.ok) {
+        setNodes(nodes);
+        setEdges(edges);
+      }
+    } catch (error) {
+      setError("Couldn't Save Editor. Try Again Later.");
+    }
   }
 
   function getMenuItems() {
@@ -104,6 +114,18 @@ export default function Canvas() {
     return result;
   }
 
+  async function set_editor_locally(id: string) {
+    let response = await fetch(`/api/editor?id=${id}`, { method: "GET" });
+    let data = await response.json();
+    if (data) {
+      console.log(data);
+      localStorage.setItem("nodes", JSON.stringify(data.Message.nodes));
+      localStorage.setItem("edges", JSON.stringify(data.Message.edges));
+      setNodes(data.Message.nodes);
+      setEdges(data.Message.edges);
+    }
+  }
+
   async function set_profile_locally(id: string) {
     let local_profile = localStorage.getItem("profile");
 
@@ -116,19 +138,21 @@ export default function Canvas() {
     let profile = await response.json();
     if (profile) {
       localStorage.setItem("profile", JSON.stringify(profile.Message));
+      set_editor_locally(id);
       setProfile(profile.Message);
     }
   }
+
   useEffect(() => {
     let local_nodes = localStorage.getItem("nodes");
     let local_edges = localStorage.getItem("edges");
-    set_profile_locally(session?.user.id);
     if (local_nodes) {
       setNodes(JSON.parse(local_nodes));
     }
     if (local_edges) {
       setEdges(JSON.parse(local_edges));
     }
+    set_profile_locally(session?.user.id);
   }, []);
 
   useEffect(() => {
@@ -148,10 +172,11 @@ export default function Canvas() {
         <Controls className={styles.controls} />
         <Panel>
           <ProfilePicture
-            image={profile?.image}
-            name={profile?.name}
+            image={profile?.image ?? ""}
+            name={profile?.name ?? ""}
+            toggleMenu={toggleProfile}
           />
-          {show && (
+          {showProfile && (
             <MenuDropdown>
               <LogoutButton />
             </MenuDropdown>
@@ -159,6 +184,7 @@ export default function Canvas() {
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
           <SaveButton saveNodes={saveNodes} />
+          {error && <p className={styles.error}>{error}</p>}
         </Panel>
         <MiniMap className={styles.controls} />
         <Background variant={BackgroundVariant.Dots} gap={15} size={2} />

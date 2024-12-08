@@ -1,7 +1,6 @@
 import { connect } from "../utils/database";
 import Security from "../utils/cryptography";
 import { Logins, Profile, Registrations, Users } from "../utils/types";
-import Registration from "@/src/components/registration";
 import { ObjectId } from "mongodb";
 
 export default class User {
