@@ -24,13 +24,14 @@ const authOptions = {
 
         let data = Authorize.safeParse(user);
         if (!data.success) return null;
-
+        
         return data.data;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }: TokenProps) {
+      console.log(user)
       if (token.email) {
         const client = new Security();
         token.accessToken = client.hash(token.email);
@@ -40,7 +41,7 @@ const authOptions = {
         token.isNewUser = user.createdAt == user.updatedAt;
       }
 
-      if (token.id) token.id = user.id;
+      if (user?.id) token.id = user.id;
 
       return token;
     },
@@ -52,7 +53,7 @@ const authOptions = {
       }
 
       session.user.isNewUser = token?.isNewUser as boolean;
-      session.user.id = token.id as string;
+      session.user.id = token?.id as string;
 
       return session;
     },

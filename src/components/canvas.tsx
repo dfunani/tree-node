@@ -117,8 +117,7 @@ export default function Canvas() {
   async function set_editor_locally(id: string) {
     let response = await fetch(`/api/editor?id=${id}`, { method: "GET" });
     let data = await response.json();
-    if (data) {
-      console.log(data);
+    if (response.ok) {
       localStorage.setItem("nodes", JSON.stringify(data.Message.nodes));
       localStorage.setItem("edges", JSON.stringify(data.Message.edges));
       setNodes(data.Message.nodes);
@@ -136,10 +135,10 @@ export default function Canvas() {
 
     let response = await fetch(`/api/auth/user?id=${id}`, { method: "GET" });
     let profile = await response.json();
-    if (profile) {
-      localStorage.setItem("profile", JSON.stringify(profile.Message));
+    if (response.ok) {
+      localStorage.setItem("profile", JSON.stringify(profile.message.data));
       set_editor_locally(id);
-      setProfile(profile.Message);
+      setProfile(profile.message.data);
     }
   }
 
@@ -152,7 +151,7 @@ export default function Canvas() {
     if (local_edges) {
       setEdges(JSON.parse(local_edges));
     }
-    set_profile_locally(session?.user.id);
+    set_profile_locally(session?.user?.id);
   }, []);
 
   useEffect(() => {

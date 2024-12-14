@@ -6,25 +6,25 @@ export async function GET(request: Request) {
   let id = query.searchParams.get("id");
 
   if (!id)
-    return Response.json({ Message: "Invalid User Request." }, { status: 400 });
+    return Response.json({ message: "Invalid User Request." }, { status: 400 });
 
   try {
     let response = await User.getProfile(id);
     if (!response)
-      return Response.json({ Message: "User Does Not Exist" }, { status: 404 });
+      return Response.json({ message: "User Does Not Exist" }, { status: 404 });
 
     let user = Profile.safeParse(response);
     if (!user.success)
       return Response.json(
-        { Message: "Invalid User Respone." },
+        { message: "Invalid User Respone." },
         { status: 500 }
       );
 
-    return Response.json({ Message: user }, { status: 200 });
+    return Response.json({ message: user }, { status: 200 });
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
-      { Message: `Invalid User ID.` },
+      { message: `Invalid User ID.` },
       {
         status: 500,
       }
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     if (!registration.success) {
       console.log(`User Registration Request Body: ${registration.error}`);
       return Response.json(
-        { Message: `Invalid User Request.` },
+        { message: `Invalid User Request.` },
         {
           status: 400,
         }
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
     if (!document) {
       return Response.json(
-        { Message: "User Already Exists." },
+        { message: "User Already Exists." },
         {
           status: 409,
         }
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
 
     return Response.json(
       {
-        Message: {
+        message: {
           id: document.insertedId,
           Timestamp: new Date().toISOString(),
         },
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
-      { Message: `Invalid User Registration.` },
+      { message: `Invalid User Registration.` },
       {
         status: 500,
       }
