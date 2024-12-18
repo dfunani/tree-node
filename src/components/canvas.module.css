@@ -10,6 +10,8 @@
 .node-item {
     display: flex;
     border: 1px solid var(--foreground);
+    justify-content: center;
+    align-items: center;
     border-radius: 5px;
     padding: 10px;
     background-color: var(--background);
@@ -21,14 +23,37 @@
     border-radius: 5px;
     padding: 5px; /* Adjust padding as needed */
     background-color: var(--background);
-    width: fit-content; /* Adjust width to fit content */
+    width: 10vw; /* Adjust width to fit content */
+    height: 10vw; /* Adjust width to fit content */
     align-items: center;
+    position: relative;
+    border-radius: 60%;
   }
 
+  .node-item:hover{
+    border-radius: 5%;
+    width: 12.5vw;
+    height: 12.5vw;
+    justify-content: flex-start;
+    .node-img{
+        visibility: hidden;
+    }
+    .node-content{
+        visibility: visible;
+        width: 100%;
+    }
+
+  }
+  .node-img{
+    position: absolute;
+    width: 92.5%;
+    height: 92.5%;
+  }
 .node-content {
     flex: 1;
-    /* Flex to fill remaining space */
     padding-left: 10px;
+    position: absolute;
+    visibility: hidden;
 }
 
 .name-surname {
@@ -51,4 +76,9 @@
     display: flex;
     justify-content: flex-start;
     gap: 5px;
+    /* border: solid red 2px; */
+    width: 80%;
+    /* justify-self: center; */
+    align-self: center;
+    margin-bottom: 20px;
   }

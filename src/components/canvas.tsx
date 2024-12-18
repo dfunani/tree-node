@@ -118,10 +118,10 @@ export default function Canvas() {
     let response = await fetch(`/api/editor?id=${id}`, { method: "GET" });
     let data = await response.json();
     if (response.ok) {
-      localStorage.setItem("nodes", JSON.stringify(data.Message.nodes));
-      localStorage.setItem("edges", JSON.stringify(data.Message.edges));
-      setNodes(data.Message.nodes);
-      setEdges(data.Message.edges);
+      localStorage.setItem("nodes", JSON.stringify(data.message.nodes));
+      localStorage.setItem("edges", JSON.stringify(data.message.edges));
+      setNodes(data.message.nodes);
+      setEdges(data.message.edges);
     }
   }
 

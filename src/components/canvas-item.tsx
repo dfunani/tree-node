@@ -57,7 +57,8 @@ export default function CanvasItem(props: Props) {
 
             <div className={styles["node-content"]}>
                 <h3 className={styles["node-name"]}>{`${props.data.fullName[0]} ${props.data.fullName[1]}`}</h3>
-                <p className={styles["node-location"]}>{`${props.data.location[0]}, ${props.data.location[1]}`}</p>
+                <p className={styles["node-location"]}>{`${props.data.location[0]}`}</p>
+                <p className={styles["node-location"]}>{`${props.data.location[1]}`}</p>
                 <p className={styles["node-dob"]}>{props.data.dob}</p>
                 <div className={styles["node-buttons"]}>
                     <button onClick={() => setGlobalState({ ...globalState, isModalOpen: true, id: props.data.label })}>

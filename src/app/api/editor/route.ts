@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     let id = query.searchParams.get("id");
 
     if (!id)
-      return Response.json({ Message: "Invalid User ID." }, { status: 400 });
+      return Response.json({ message: "Invalid User ID." }, { status: 400 });
 
     let db = await connect();
     let collection = db.collection("nodes");
@@ -37,16 +37,19 @@ export async function GET(request: Request) {
 
     if (!response) {
       return Response.json(
-        { Message: "No Node/Edge Data Available for User ID." },
+        { message: "No Node/Edge Data Available for User ID." },
         { status: 404 }
       );
     }
 
-    return Response.json({
-      Message: response,
-    });
+    return Response.json(
+      {
+        message: response,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    return Response.json({ Message: `MongoDB Client Error${error}` });
+    return Response.json({ message: `MongoDB Client Error${error}` });
   }
 }
 
@@ -60,8 +63,12 @@ export async function POST(request: Request) {
       { $set: response },
       { upsert: true }
     );
-    return Response.json({ Message: document });
+    return Response.json({ message: document });
   } catch (error) {
-    return Response.json({ Message: `MongoDB Client Error${error}` });
+    return Response.json({ message: `MongoDB Client Error${error}` });
   }
+}
+
+export async function DELETE(req: Request) {
+  return Response.json({ M });
 }

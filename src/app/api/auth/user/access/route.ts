@@ -9,20 +9,20 @@ export async function POST(request: Request) {
     if (!credentials.success) {
       console.log(`Invalid User Request: ${credentials.error}`);
       return Response.json(
-        { Message: "Invalid User Request." },
+        { message: "Invalid User Request." },
         { status: 400 }
       );
     }
 
     let user = await User.getUser(credentials.data);
     if (!user)
-      return Response.json({ Message: "User Does Not Exist" }, { status: 404 });
+      return Response.json({ message: "User Does Not Exist" }, { status: 404 });
 
     let data = Authorize.safeParse(user);
     if (!data.success) {
       console.log(`Invalid User Response: ${data.error}`);
       return Response.json(
-        { Message: "Invalid User Respone." },
+        { message: "Invalid User Respone." },
         { status: 500 }
       );
     }
@@ -31,11 +31,11 @@ export async function POST(request: Request) {
     data.data.email = client.decrypt(data.data.email);
     data.data.password = "**********";
 
-    return Response.json({ Message: data.data }, { status: 200 });
+    return Response.json({ message: data.data }, { status: 200 });
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
-      { Message: `Invalid User Authorization.` },
+      { message: `Invalid User Authorization.` },
       {
         status: 500,
       }
