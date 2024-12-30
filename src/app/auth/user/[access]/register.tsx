@@ -20,7 +20,7 @@ export default function Page() {
     password: "",
     name: "",
     surname: "",
-    dob: null,
+    dob: "",
     city: "",
     country: "",
     image: "",

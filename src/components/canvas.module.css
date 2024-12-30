@@ -7,78 +7,56 @@
     color: var(--foreground);
 }
 
+
 .node-item {
     display: flex;
     border: 1px solid var(--foreground);
+    border-radius: 5px;
+    padding: 5px;
+    background-color: var(--background);
+    width: 10vw;
+    height: 10vw;
     justify-content: center;
     align-items: center;
-    border-radius: 5px;
-    padding: 10px;
-    background-color: var(--background);
+    position: relative;
+
 }
 
-.node-item {
-    display: flex;
-    border: 1px solid var(--foreground);
-    border-radius: 5px;
-    padding: 5px; /* Adjust padding as needed */
-    background-color: var(--background);
-    width: 10vw; /* Adjust width to fit content */
-    height: 10vw; /* Adjust width to fit content */
-    align-items: center;
-    position: relative;
+.rounded {
     border-radius: 60%;
-  }
+}
 
-  .node-item:hover{
-    border-radius: 5%;
-    width: 12.5vw;
-    height: 12.5vw;
-    justify-content: flex-start;
-    .node-img{
-        visibility: hidden;
-    }
-    .node-content{
-        visibility: visible;
-        width: 100%;
-    }
 
-  }
-  .node-img{
+.node-img {
     position: absolute;
     width: 92.5%;
     height: 92.5%;
-  }
+}
+
 .node-content {
-    flex: 1;
-    padding-left: 10px;
-    position: absolute;
-    visibility: hidden;
-}
-
-.name-surname {
-    font-weight: bold;
-    font-size: 1.2em;
-    /* Increase size for emphasis */
-    margin-bottom: 5px;
-    /* Add some space */
-}
-
-.location,
-.dob {
-    font-size: 0.9em;
-    /* Smaller font size */
-    color: #666;
-    /* Light theme or adjust color */
-}
-
-.node-buttons{
+    height: 92.5%;
+    width: 92.5%;
     display: flex;
-    justify-content: flex-start;
-    gap: 5px;
-    /* border: solid red 2px; */
-    width: 80%;
-    /* justify-self: center; */
-    align-self: center;
-    margin-bottom: 20px;
-  }
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.node-name {
+    font-size: x-large;
+}
+
+.node-location
+{
+    font-size: small;
+}
+
+.node-dob {
+    font-size: small;
+}
+
+.node-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

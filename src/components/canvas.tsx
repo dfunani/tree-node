@@ -68,8 +68,10 @@ export default function Canvas() {
         position: position,
         type: "Canvas-Item",
         data: {
-          fullName: ["John", "Doe"],
-          location: ["Cape Town", "South Africa"],
+          name: "John",
+          surname: "Doe",
+          city: "Cape Town",
+          country: "South Africa",
           dob: buildDate(new Date()),
           image: src,
           label: `Canvas-Node-${nodes.length + 1}`,

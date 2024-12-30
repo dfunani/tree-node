@@ -1,16 +1,11 @@
 .modal-container {
     position: fixed;
-    top: 25%;
-    right: 25%;
     display: flex;
     justify-content: center;
     width: 40vw;
     height: 40vh;
     align-items: center;
     background-color: var(--foreground);
-    /* display: flex; */
-    /* justify-content: center;
-    align-items: center; */
 }
 
 .modal-content {

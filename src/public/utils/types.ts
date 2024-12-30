@@ -1,23 +1,19 @@
 import { StaticImageData } from "next/image";
+import { Dispatch, SetStateAction } from "react";
 
 export type Position = {
   x: number;
   y: number;
-};
-export type Data = {
-  fullName: [string, string];
-  location: [string, string];
-  dob: string;
-  image: StaticImageData | string;
-  label: string;
 };
 
 export type Nodes = {
   id: string;
   position: Position;
   type: string;
-  data: Data;
+  data: NodeData;
 };
+
+export type NodeData = Profile & { label: string };
 
 export type Edges = {
   id: string;
@@ -35,7 +31,7 @@ export type Registrations = {
   dob: string;
   city: string;
   country: string;
-  image: string | null;
+  image: string | null | StaticImageData;
 };
 
 export type Logins = {

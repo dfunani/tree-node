@@ -1,5 +1,9 @@
 import User from "@/src/public/models/users";
-import { Profile, Registration } from "@/src/public/models/data_classes";
+import {
+  Profile,
+  Registration,
+  PatchDetails,
+} from "@/src/public/models/data_classes";
 
 export async function GET(request: Request) {
   let query = new URL(request.url);
@@ -37,7 +41,6 @@ export async function POST(request: Request) {
     let response = await request.json();
     let registration = Registration.safeParse(response);
     if (!registration.success) {
-      console.log(`User Registration Request Body: ${registration.error}`);
       return Response.json(
         { message: `Invalid User Request.` },
         {
@@ -77,4 +80,43 @@ export async function POST(request: Request) {
       }
     );
   }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    let response = request.json();
+    let details = PatchDetails.safeParse(response);
+
+    if (!details.success) {
+      return Response.json(
+        { message: `Invalid User Update Request.` },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    let document = await User.createUser(details.data);
+
+    if (!document) {
+      return Response.json(
+        { message: "User Already Exists." },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    return Response.json(
+      {
+        message: {
+          id: document.insertedId,
+          Timestamp: new Date().toISOString(),
+        },
+      },
+      {
+        status: 201,
+      }
+    );
+  } catch (error) {}
 }

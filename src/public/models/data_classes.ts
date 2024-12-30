@@ -19,6 +19,15 @@ export const Registration = z.object({
   image: z.string().regex(imageRegex).nullable(),
 });
 
+export const PatchDetails = z.object({
+  name: z.string().min(1, "Invalid Name.").max(255),
+  surname: z.string().min(1, "Invalid Surname.").max(255),
+  dob: z.string().regex(dobRegex, "Invalid Date Of Birth."),
+  city: z.string().min(1, "Invalid City.").max(255),
+  country: z.string().min(1, "Invalid Country").max(255),
+  image: z.string().regex(imageRegex).nullable(),
+});
+
 export const Profile = z.object({
   name: z.string().min(1, "Invalid Name.").max(255),
   surname: z.string().min(1, "Invalid Surname.").max(255),
