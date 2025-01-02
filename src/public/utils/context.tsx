@@ -11,7 +11,10 @@ type Props = {
 export const GlobalProvider = (props: Props) => {
   const [globalState, setGlobalState] = useState({
     isModalOpen: false,
-    id: "",
+    user: null,
+    nodes: null,
+    edges: null,
+    profile: null,
   });
 
   const value = { globalState, setGlobalState };

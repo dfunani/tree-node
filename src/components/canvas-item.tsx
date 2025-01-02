@@ -1,13 +1,16 @@
+import Error from "next/error";
 import Image from "next/image";
 import styles from "@/src/components/canvas.module.css";
 import { Handle, Position } from "@xyflow/react";
 import { v4 as uuid4 } from "uuid";
-import { Edges, NodeData, Nodes } from "@/src/public/utils/types";
+import { Edges, NodeData, Nodes, StateReducer } from "@/src/public/utils/types";
 import Modal from "@/src/components/modal";
 import { useEffect, useState } from "react";
 import { GlobalProvider, useGlobalContext } from "@/src/public/utils/context";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useDispatch, useSelector } from "react-redux";
+import { UPDATE } from "@/lib/reducers/editor";
 
 type Props = {
   id: string;
@@ -17,26 +20,61 @@ type Props = {
 
 export default function CanvasItem(props: Props) {
   const router = useRouter();
-  const { globalState, setGlobalState } = useGlobalContext();
+
+  const dispatch = useDispatch();
+
+  const userState = useSelector((state: StateReducer) => state.user);
+  const profileState = useSelector((state: StateReducer) => state.profile);
+  const editorState = useSelector((state: StateReducer) => state.editor);
+
   const [clicked, setClicked] = useState(false);
   const [modal, setModal] = useState(false);
   const { data: session } = useSession();
-  const [error, setError] = useState<String | null>(null);
+  const [outcome, setOutcome] = useState<String | null>(null);
 
   async function saveNodes(nodes: Nodes[], edges: Edges[]) {
     try {
       let response = await fetch("/api/editor", {
         method: "POST",
         body: JSON.stringify({
-          user_id: session?.user.id,
+          user_id: userState.id,
           nodes: nodes,
           edges: edges,
         }),
       });
-      setError(null);
+      if (response.ok) {
+        setOutcome("Nodes/Edges Saved Successfully.");
+        dispatch(UPDATE({ nodes: nodes ?? [], edges: edges ?? [] }));
+      } else {
+        setOutcome("Couldn't Save Editor. Try Again Later.");
+      }
     } catch (error) {
-      setError("Couldn't Save Editor. Try Again Later.");
+      setOutcome("Couldn't Save Editor. Try Again Later.");
     }
+  }
+
+  async function deleteNodes(id: string) {
+    let nodes = editorState.nodes?.filter((value: Nodes) => value.id !== id);
+    let edges = editorState.edges?.filter(
+      (value: Edges) => value.source !== id && value.target !== id
+    );
+    saveNodes(nodes ?? [], edges ?? []);
+    setClicked(false);
+  }
+
+  async function updateNodes(id: string, new_node: any) {
+    let nodes = editorState.nodes?.map((node: Nodes) => {
+      if (node.id === id) {
+        return {
+          ...node,
+          data: { ...node.data, ...new_node },
+        };
+      }
+      return node;
+    });
+    console.log(nodes);
+    saveNodes(nodes ?? [], editorState.edges ?? []);
+    setClicked(false);
   }
 
   function renderHandlers() {
@@ -76,12 +114,11 @@ export default function CanvasItem(props: Props) {
     <div
       className={`${styles["node-item"]} ${clicked ? "" : styles["rounded"]}`}
       onClick={() => setClicked((prev: boolean) => !prev)}
-      onMouseLeave={() => setTimeout(() => setClicked(false), 500)}
     >
       {renderHandlers()}
 
       {!clicked && (
-        <Image
+        <img
           className={styles["node-img"]}
           src={props.data.image as string}
           alt={props.data.label}
@@ -99,14 +136,10 @@ export default function CanvasItem(props: Props) {
           <div className={styles["node-dob"]}>{props.data.dob}</div>
           <div className={styles["node-buttons"]}>
             <button
-              onClick={() =>
-                // setGlobalState({
-                //   ...globalState,
-                //   isModalOpen: true,
-                //   id: props.data.label,
-                // })
-                setModal(true)
-              }
+              onClick={() => {
+                setModal(true);
+                setClicked(false);
+              }}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -125,17 +158,8 @@ export default function CanvasItem(props: Props) {
             </button>
             <button
               onClick={() => {
-                let nodes: Nodes[] = JSON.parse(localStorage.getItem("nodes"));
-                let edges: Edges[] = JSON.parse(localStorage.getItem("edges"));
-                nodes = nodes.filter((value: Nodes) => value.id !== props.id);
-                edges = edges.filter(
-                  (value: Edges) =>
-                    value.source !== props.id || value.target !== props.id
-                );
-                saveNodes(nodes, edges);
-                localStorage.setItem("nodes", JSON.stringify(nodes));
-                localStorage.setItem("edges", JSON.stringify(edges));
-                router.refresh();
+                deleteNodes(props.id);
+                setClicked(false);
               }}
             >
               <svg
@@ -165,9 +189,14 @@ export default function CanvasItem(props: Props) {
           </div>
         </div>
       )}
-      {modal && <Modal setModal={setModal} data={props.data} />}
-      {/* {globalState.isModalOpen && globalState.id === props.data.label && (
-      )} */}
+      {modal && (
+        <Modal
+          setClicked={setClicked}
+          setModal={setModal}
+          updateNodes={updateNodes}
+          id={props.id}
+        />
+      )}
     </div>
   );
 }

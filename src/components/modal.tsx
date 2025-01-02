@@ -2,54 +2,56 @@ import React, { useState } from "react";
 import styles from "@/src/components/modal.module.css";
 import { useGlobalContext } from "@/src/public/utils/context";
 import Registration from "@/src/components/registration";
-import { NodeData, Registrations } from "../public/utils/types";
+import { NodeData, Nodes, Registrations } from "../public/utils/types";
 import { useRouter } from "next/navigation";
+import { StaticImageData } from "next/image";
+import { UpdateNodeProfile } from "../public/types/auth";
+import { buildDate } from "../public/utils/factories";
 
-type Details = Omit<Registrations, "email" | "password">;
 type Props = {
+  setClicked: any;
   setModal: any;
-  data: NodeData;
+  updateNodes: (id: string, node: any) => void;
+  id: string;
 };
-export default function Modal(props: Props) {
-  const router = useRouter();
 
-  const [details, setDetails] = useState(props.data);
+export default function Modal(props: Props) {
+  const [details, setDetails] = useState<UpdateNodeProfile>({});
 
   function handleUpdateRegistration(key: string, value: string) {
-    // props.data.setNode((prevRegistration) => {
-    //   console.log(prevRegistration)
-    //   return prevRegistration
-    //   return { ...prevRegistration, [key]: value };
-    // });
+    setDetails((prev: UpdateNodeProfile) => {
+      return {
+        ...(prev ?? {}),
+        [key]: key === "dob" ? buildDate(new Date(value)) : value,
+      };
+    });
   }
 
   async function handleRegistration() {
-    console.log("Hello")
+    props.updateNodes(props.id, details);
+    props.setModal(false);
+    props.setClicked(false);
 
-    // if (response.ok || response.status == 409) {
-    //   router.push(`/auth/user/login?resolve=${response.statusText}`);
-    // } else {
-    //   setError("Registration Failed. Please Try Again Later.");
-    // }
   }
   return (
     <div
       className={styles["modal-container"]}
-      onMouseLeave={() => props.setModal(false)}
+      // onMouseLeave={() => props.setModal(false)}
     >
-      <div className={styles["modal-content"]}>
-        <span
-          className={styles["close-button"]}
-          onClick={() => props.setModal(false)}
-        >
-          &times;
-        </span>
-        <Registration
-          registration={props.data}
-          handleUpdateRegistration={handleUpdateRegistration}
-          handleRegistration={handleRegistration}
-        />
-      </div>
+      <span
+        className={styles["close-button"]}
+        onClick={() => {
+          props.setModal(false);
+          props.setClicked(false);
+        }}
+      >
+        &times;
+      </span>
+      <Registration
+        registration={details}
+        handleUpdateRegistration={handleUpdateRegistration}
+        handleRegistration={handleRegistration}
+      />
     </div>
   );
 }

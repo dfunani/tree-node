@@ -5,6 +5,9 @@
 import { ReactNode } from "react";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { Provider } from "react-redux";
+import { store, persistor } from "@/lib/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 type Props = {
   session: Session | null;
@@ -12,6 +15,12 @@ type Props = {
 };
 export default function Providers(props: Props) {
   return (
-    <SessionProvider session={props.session}>{props.children}</SessionProvider>
+    <SessionProvider session={props.session}>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          {props.children}
+        </PersistGate>
+      </Provider>
+    </SessionProvider>
   );
 }

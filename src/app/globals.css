@@ -2,6 +2,9 @@
   --background: #f0f0f0;
   --foreground: #ddd;
   --content: #333;
+  --error-foreground: rgb(255, 255, 255);
+  --error-background: rgb(253, 60, 60);
+  --success-background: rgb(60, 200, 60);
 }
 
 @media (prefers-color-scheme: dark) {

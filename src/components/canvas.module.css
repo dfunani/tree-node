@@ -1,6 +1,7 @@
 .canvas {
     width: 100vw;
     height: 100vh;
+
 }
 
 .controls {
@@ -19,11 +20,11 @@
     justify-content: center;
     align-items: center;
     position: relative;
-
 }
 
 .rounded {
     border-radius: 60%;
+
 }
 
 
@@ -31,6 +32,8 @@
     position: absolute;
     width: 92.5%;
     height: 92.5%;
+    border-radius: 60%;
+
 }
 
 .node-content {
@@ -46,8 +49,7 @@
     font-size: x-large;
 }
 
-.node-location
-{
+.node-location {
     font-size: small;
 }
 
@@ -59,4 +61,55 @@
     width: 100%;
     display: flex;
     justify-content: center;
+}
+
+.error {
+    bottom: 30px;
+    left: 40%;
+    right: 50%;
+}
+
+.error {
+    position: fixed;
+    width: 30%;
+    height: 75px;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 40px;
+    background-color: var(--error-background);
+    font-size: 16px;
+    line-height: 1.5;
+    text-align: left;
+
+    font-weight: 500;
+    color: var(--error-foreground);
+    cursor: pointer;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.error-text {
+    /* display: none; */
+    /* Initially hide text */
+    font-size: 1em;
+    /* Adjust font size */
+    margin-left: 5px;
+    /* Adjust spacing between icon and text */
+}
+
+.error-close {
+    /* display: none; */
+    /* Initially hide text */
+    font-size: 2em;
+    /* Adjust font size */
+    margin-left: 10px;
+    /* Adjust spacing between icon and text */
+}
+
+.success{
+    background-color: var(--success-background);
 }

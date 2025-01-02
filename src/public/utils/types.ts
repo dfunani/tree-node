@@ -1,3 +1,6 @@
+import { EditorState } from "@/lib/reducers/editor";
+import { UserState } from "@/lib/reducers/user";
+import { ProfileState } from "@/lib/reducers/profile";
 import { StaticImageData } from "next/image";
 import { Dispatch, SetStateAction } from "react";
 
@@ -49,4 +52,10 @@ export type Profile = Omit<Registrations, "email" | "password">;
 
 export type ServerResponse = {
   message: any;
+};
+
+export type StateReducer = {
+  user: UserState;
+  editor: EditorState;
+  profile: ProfileState;
 };

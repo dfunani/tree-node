@@ -1,14 +1,20 @@
+import { CLEAR as clearUser } from "@/lib/reducers/user";
+import { CLEAR as clearProfile } from "@/lib/reducers/profile";
+import { CLEAR as clearEditor } from "@/lib/reducers/editor";
 import styles from "@/src/components/button.module.css";
 import { signOut } from "next-auth/react";
+import { stringify } from "querystring";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function LogoutButton() {
+  const dispatch = useDispatch();
   return (
     <button
       className={styles["logout-pill"]}
       onClick={() => {
-        localStorage.removeItem("profile");
-        localStorage.removeItem("nodes");
-        localStorage.removeItem("edges");
+        dispatch(clearUser());
+        dispatch(clearProfile());
+        dispatch(clearEditor());
         signOut();
       }}
     >

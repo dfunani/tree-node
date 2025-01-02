@@ -3,9 +3,10 @@ import { ChangeEvent, useState } from "react";
 import styles from "@/src/public/styles/auth.module.css";
 import { Registrations } from "@/src/public/utils/types";
 import AddButton from "./addButton";
+import { UpdateNodeProfile } from "../public/types/auth";
 
 type Props = {
-  registration: Omit<Registrations, "email" | "password">;
+  registration: Omit<Registrations, "email" | "password"> | UpdateNodeProfile;
   handleUpdateRegistration: (key: string, value: any) => void;
   handleRegistration: () => void;
 };
@@ -45,7 +46,7 @@ export default function Registration(props: Props) {
           {!props.registration.image && <AddButton />}
           {props.registration.image && (
             <img
-              src={props.registration.image}
+              src={props.registration.image as string}
               alt={"Profile-Picture"}
               className={styles["file-image"]}
             />
