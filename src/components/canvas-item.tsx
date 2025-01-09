@@ -72,7 +72,6 @@ export default function CanvasItem(props: Props) {
       }
       return node;
     });
-    console.log(nodes);
     saveNodes(nodes ?? [], editorState.edges ?? []);
     setClicked(false);
   }

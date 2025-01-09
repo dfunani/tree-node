@@ -20,6 +20,7 @@ export const Registration = z.object({
 });
 
 export const PatchDetails = z.object({
+  id: z.string().regex(objectIDRegex),
   name: z.string().min(1, "Invalid Name.").max(255),
   surname: z.string().min(1, "Invalid Surname.").max(255),
   dob: z.string().regex(dobRegex, "Invalid Date Of Birth."),
@@ -48,4 +49,41 @@ export const Authorize = z.object({
   password: z.string(),
   createdAt: z.string().regex(systemDateRegex),
   updatedAt: z.string().regex(systemDateRegex),
+});
+
+const nodeData = z.object({
+  name: z.string().min(1, "Invalid Name.").max(255),
+  surname: z.string().min(1, "Invalid Surname.").max(255),
+  dob: z.string().regex(dobRegex, "Invalid Date Of Birth."),
+  city: z.string().min(1, "Invalid City.").max(255),
+  country: z.string().min(1, "Invalid Country").max(255),
+  image: z.string().regex(imageRegex).nullable(),
+  label: z.string(),
+});
+
+const position = z.object({
+  x: z.number(),
+  y: z.number(),
+});
+
+const Node = z.object({
+  id: z.string().regex(objectIDRegex),
+  position: position,
+  type: z.string(),
+  data: nodeData,
+});
+
+export const Edge = z.object({
+  id: z.string(),
+  source: z.string(),
+  sourceHandle: z.string(),
+  target: z.string(),
+  targetHandle: z.string(),
+});
+
+export const Editor = z.object({
+  id: z.string().regex(objectIDRegex),
+  user_id: z.string(),
+  nodes: z.array(Node),
+  edges: z.array(Edge),
 });

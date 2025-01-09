@@ -58,6 +58,7 @@ export default function Canvas() {
   const [showProfile, setshowProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
 
   if (!session || !session.user) {
     return <Error statusCode={403} />;
@@ -82,7 +83,7 @@ export default function Canvas() {
     [editorState]
   );
 
-  function addNode(position: Position, src: StaticImageData | string) {
+  function addNode(position: Position, src: StaticImageData | string | null) {
     let id = uuid4().toString();
     let node: Nodes = {
       id: id,
@@ -128,7 +129,8 @@ export default function Canvas() {
   }
 
   function getMenuItems() {
-    let images = generateImages("dark");
+    const images = generateImages(theme);
+    
     let result = [];
     for (let image in images) {
       result.push(
@@ -185,6 +187,10 @@ export default function Canvas() {
     if (Object.values(editorState).every((state: unknown) => state === null)) {
       setEditor(session.user.id ?? userState.id);
     }
+
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (isDark) setTheme("dark");
+    else setTheme("light");
   }, []);
   return (
     <div className={styles.canvas}>

@@ -1,20 +1,22 @@
 import { Authorize, Credentials } from "@/src/public/models/data_classes";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
+import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 export async function POST(request: Request) {
   try {
     let response = await request.json();
     let credentials = Credentials.safeParse(response);
     if (!credentials.success) {
-      console.log(`Invalid User Request: ${credentials.error}`);
       return Response.json(
         { message: "Invalid User Request." },
         { status: 400 }
       );
     }
 
-    let user = await User.getUser(credentials.data);
+    const { db_url, db_name } = getDatabaseConfig();
+
+    let user = await new User(db_url, db_name).getUser(credentials.data);
     if (!user)
       return Response.json({ message: "User Does Not Exist" }, { status: 404 });
 

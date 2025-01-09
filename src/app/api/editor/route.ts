@@ -1,27 +1,5 @@
-import { MockPostData } from "@/tests/mock";
-import { MongoClient } from "mongodb";
-
-async function connect() {
-  const uri = `mongodb+srv://${process.env.username}:${process.env.password}@${process.env.db_host}/?retryWrites=true&w=majority&appName=${process.env.db_name}`;
-  let db_name = "tree_node";
-
-  const client = new MongoClient(uri);
-  if (!client) {
-    throw new Error("Mongo Client Error.");
-  }
-
-  let connection = await client.connect();
-  if (!connection) {
-    throw new Error("Mongo Connection Error.");
-  }
-
-  let db = connection.db(db_name);
-  if (!db) {
-    throw new Error("Mongo DB Name Error.");
-  }
-
-  return db;
-}
+import Editor from "@/src/public/models/editor";
+import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 export async function GET(request: Request) {
   try {
@@ -31,14 +9,23 @@ export async function GET(request: Request) {
     if (!id)
       return Response.json({ message: "Invalid User ID." }, { status: 400 });
 
-    let db = await connect();
-    let collection = db.collection("nodes");
-    let response = await collection.findOne({ user_id: id });
+    const { db_url, db_name } = getDatabaseConfig();
+    const editor = new Editor(db_url, db_name);
+    const response = await editor.get(id);
 
     if (!response) {
       return Response.json(
-        { message: "No Node/Edge Data Available for User ID." },
+        { message: "No Editor Data Available for User ID." },
         { status: 404 }
+      );
+    }
+
+    let user = Edito.safeParse(response);
+    if (!user.success) {
+      console.log(`User Error: ${user.error}`);
+      return Response.json(
+        { message: "Invalid User Respone." },
+        { status: 500 }
       );
     }
 
@@ -49,7 +36,13 @@ export async function GET(request: Request) {
       { status: 200 }
     );
   } catch (error) {
-    return Response.json({ message: `MongoDB Client Error${error}` });
+    console.log(`Editor Error: ${error}`);
+    return Response.json(
+      { message: `Invalid Editor.` },
+      {
+        status: 500,
+      }
+    );
   }
 }
 

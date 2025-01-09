@@ -4,6 +4,7 @@ import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
 import { SessionProps, TokenProps } from "@/src/public/types/auth";
 import { Authorize } from "@/src/public/models/data_classes";
+import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 const authOptions = {
   providers: [
@@ -15,23 +16,24 @@ const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, _) {
-        if (!credentials || !credentials.email || !credentials.password) {
+        if (!credentials || !credentials.email || !credentials.password)
           return null;
-        }
 
-        let user = await User.getUser(credentials);
+        const { db_url, db_name } = getDatabaseConfig();
+
+        let user = await new User(db_url, db_name).getUser(credentials);
         if (!user) return null;
 
         let data = Authorize.safeParse(user);
         if (!data.success) return null;
-        
+
         return data.data;
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }: TokenProps) {
-      console.log(user)
+      console.log(user);
       if (token.email) {
         const client = new Security();
         token.accessToken = client.hash(token.email);

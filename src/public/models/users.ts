@@ -1,18 +1,20 @@
-import { connect } from "../utils/database";
-import Security from "../utils/cryptography";
-import { Logins, Profile, Registrations, Users } from "../utils/types";
+import Security from "@/src/public/utils/cryptography";
+import {
+  Logins,
+  Profile,
+  Registrations,
+  Users,
+} from "@/src/public/utils/types";
 import { ObjectId } from "mongodb";
+import Model from "@/src/public/models/model";
 
-export default class User {
-  static async getCollection() {
-    let db = await connect();
-    let collection = db.collection("users");
-
-    return collection;
+export default class User extends Model {
+  constructor(db_uri: string, db_name: string) {
+    super(db_uri, db_name, "users");
   }
 
-  static async getUser(credentials: Logins): Promise<Users | null> {
-    const collection = await User.getCollection();
+  async getUser(credentials: Logins): Promise<Users | null> {
+    const collection = await this.getCollection();
 
     const client = new Security();
     credentials.email = client.encrypt(credentials.email);
@@ -33,8 +35,8 @@ export default class User {
     };
   }
 
-  static async getProfile(id: string): Promise<Profile | null> {
-    const collection = await User.getCollection();
+  async getProfile(id: string): Promise<Profile | null> {
+    const collection = await this.getCollection();
 
     let response = await collection.findOne({
       _id: ObjectId.createFromHexString(id),
@@ -52,8 +54,8 @@ export default class User {
     };
   }
 
-  static async createUser(registration: Registrations) {
-    let collection = await User.getCollection();
+  async createUser(registration: Registrations) {
+    let collection = await this.getCollection();
 
     const client = new Security();
     registration.email = client.encrypt(registration.email);
@@ -70,6 +72,20 @@ export default class User {
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
     });
+    return document;
+  }
+
+  async updateUser(profile: { id: string } & Profile) {
+    let collection = await this.getCollection();
+
+    let now = new Date();
+    let document = await collection.updateOne(
+      { _id: ObjectId.createFromBase64(profile.id) },
+      {
+        ...profile,
+        updatedAt: now.toISOString(),
+      }
+    );
     return document;
   }
 }

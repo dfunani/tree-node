@@ -15,7 +15,7 @@ export default function Registration(props: Props) {
     const client = new FileReader();
     client.readAsArrayBuffer(file);
     client.onload = (event: ProgressEvent<FileReader>) => {
-      const arrayBuffer = event.target?.result;
+      const arrayBuffer: unknown = event.target?.result;
       if (arrayBuffer) {
         const buffer = Buffer.from(arrayBuffer as Buffer);
         const base64String = buffer.toString("base64");

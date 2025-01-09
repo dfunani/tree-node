@@ -29,12 +29,12 @@ export type Edges = {
 export type Registrations = {
   email: string;
   password: string;
-  name: string;
-  surname: string;
-  dob: string;
-  city: string;
-  country: string;
-  image: string | null | StaticImageData;
+  name?: string;
+  surname?: string;
+  dob?: string;
+  city?: string;
+  country?: string;
+  image?: string | null | StaticImageData;
 };
 
 export type Logins = {
