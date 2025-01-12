@@ -3,9 +3,9 @@ import {
   Profile,
   Registration,
   PatchDetails,
-  Editor,
 } from "@/src/public/models/data_classes";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
+import { profile } from "console";
 
 export async function GET(request: Request) {
   let query = new URL(request.url);
@@ -21,9 +21,9 @@ export async function GET(request: Request) {
     if (!response)
       return Response.json({ message: "User Does Not Exist" }, { status: 404 });
 
-    let editor = Editor.safeParse(response);
+    let editor = Profile.safeParse(response);
     if (!editor.success) {
-      console.log(`Editor Error: ${editor.error}`);
+      console.log(`User Error: ${editor.error}`);
       return Response.json(
         { message: "Invalid User Respone." },
         { status: 500 }

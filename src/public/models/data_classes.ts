@@ -52,12 +52,12 @@ export const Authorize = z.object({
 });
 
 const nodeData = z.object({
-  name: z.string().min(1, "Invalid Name.").max(255),
-  surname: z.string().min(1, "Invalid Surname.").max(255),
-  dob: z.string().regex(dobRegex, "Invalid Date Of Birth."),
-  city: z.string().min(1, "Invalid City.").max(255),
-  country: z.string().min(1, "Invalid Country").max(255),
-  image: z.string().regex(imageRegex).nullable(),
+  name: z.string().min(1, "Invalid Name."),
+  surname: z.string().min(1, "Invalid Surname."),
+  dob: z.string().regex(/\w{3}, \d{1,2} \w{3} \d{4}/, "Invalid Date Of Birth."),
+  city: z.string().min(1, "Invalid City."),
+  country: z.string().min(1, "Invalid Country"),
+  image: z.string(),
   label: z.string(),
 });
 
@@ -67,7 +67,7 @@ const position = z.object({
 });
 
 const Node = z.object({
-  id: z.string().regex(objectIDRegex),
+  id: z.string(),
   position: position,
   type: z.string(),
   data: nodeData,

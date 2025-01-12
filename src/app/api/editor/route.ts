@@ -1,4 +1,5 @@
 import Editor from "@/src/public/models/editor";
+import { Editor as ed } from "@/src/public/models/data_classes";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 export async function GET(request: Request) {
@@ -20,9 +21,9 @@ export async function GET(request: Request) {
       );
     }
 
-    let user = Edito.safeParse(response);
+    let user = ed.safeParse(response);
     if (!user.success) {
-      console.log(`User Error: ${user.error}`);
+      console.log(`Editor Error: ${user.error}`);
       return Response.json(
         { message: "Invalid User Respone." },
         { status: 500 }
