@@ -19,4 +19,22 @@ export default class Editor extends Model {
       nodes: response.nodes,
     };
   }
+
+  async update(user_id: String, data: Any) {
+    const collection = await this.getCollection();
+
+    let document = await collection.updateOne(
+      { user_id: user_id },
+      { $set: data },
+      { upsert: true }
+    );
+    return document
+  }
+
+  async delete(user_id: String){
+    const collection = await this.getCollection();
+
+    let document = await collection.deleteOne({user_id: user_id})
+    return document
+  }
 }

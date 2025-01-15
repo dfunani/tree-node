@@ -22,14 +22,21 @@
   top: 30px;
   left: 50%;
 }
-.logout-pill{
+
+.logout-pill {
   top: 80px;
   left: 25px;
 
 }
 
+.delete-pill {
+  top: 140px;
+  left: 25px;
+}
+
 .save-pill,
-.logout-pill {
+.logout-pill,
+.delete-pill {
   position: fixed;
   width: 50px;
   /* Adjust width as needed */
@@ -49,14 +56,15 @@
   transition: width 0.1s ease-in-out;
 }
 
-.save-pill-icon, .logout-pill-icon {
+.save-pill-icon,
+.logout-pill-icon {
   width: 20px;
   /* Adjust icon size */
   height: 20px;
   /* Adjust icon size */
 }
 
-.save-pill-text{
+.save-pill-text {
   display: none;
   /* Initially hide text */
   font-size: 0.8em;
@@ -65,7 +73,7 @@
   /* Adjust spacing between icon and text */
 }
 
-.logout-pill-text{
+.logout-pill-text {
   display: none;
   /* Initially hide text */
   font-size: 0.8em;
@@ -74,8 +82,9 @@
   /* Adjust spacing between icon and text */
 }
 
-.save-pill:hover ,
-.logout-pill:hover{
+.save-pill:hover,
+.logout-pill:hover,
+.delete-pill:hover {
   width: 100px;
   border: none;
   /* padding: 10px 20px; */
@@ -88,14 +97,16 @@
   /* Darken background color on hover (optional) */
 }
 
-.save-pill:hover .save-pill-text, .logout-pill:hover .logout-pill-text {
+.save-pill:hover .save-pill-text,
+.logout-pill:hover .logout-pill-text,
+.delete-pill:hover .logout-pill-text {
   display: block;
   /* Show text on hover */
   font-size: 15px;
 
 }
 
-.profile-pill{
+.profile-pill {
   position: fixed;
   width: 50px;
   /* Adjust width as needed */
@@ -115,7 +126,6 @@
   transition: width 0.1s ease-in-out;
 }
 
-.profile-pill > *{
+.profile-pill>* {
   width: 80%;
 }
-

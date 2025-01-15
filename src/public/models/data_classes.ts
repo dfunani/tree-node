@@ -8,6 +8,10 @@ const systemDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const objectIDRegex = /^[0-9a-fA-F]{24}$/;
 const imageRegex = /^data:image\/(png|jpg|jpeg);base64,/;
 
+export const RegisterUser = z.object({
+  id: z.string().regex(objectIDRegex, "Invalid User ID.").nullable(),
+});
+
 export const Registration = z.object({
   email: z.string().email().regex(emailRegex, "Invalid Email."),
   password: z.string().regex(passwordRegex, "Invalid Password."),
@@ -82,8 +86,12 @@ export const Edge = z.object({
 });
 
 export const Editor = z.object({
-  id: z.string().regex(objectIDRegex),
+  id: z.string().regex(objectIDRegex).optional(),
   user_id: z.string(),
   nodes: z.array(Node),
   edges: z.array(Edge),
+});
+
+export const Delete = z.object({
+  user_id: z.string(),
 });

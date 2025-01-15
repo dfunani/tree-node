@@ -33,6 +33,7 @@ import CanvasItem from "@/src/components/canvas-item";
 import SaveButton from "@/src/components/save-button";
 import { signOut, useSession } from "next-auth/react";
 import LogoutButton from "./logout-button";
+import DeleteButton from "./delete-button";
 import Error from "next/error";
 import ProfilePicture from "./profile-picture";
 import { useDispatch, useSelector } from "react-redux";
@@ -112,7 +113,7 @@ export default function Canvas() {
       let response = await fetch("/api/editor", {
         method: "POST",
         body: JSON.stringify({
-          user_id: session?.user.id,
+          user_id: userState.id,
           nodes: editorState.nodes,
           edges: editorState.edges,
         }),
@@ -128,9 +129,28 @@ export default function Canvas() {
     }
   }
 
+  async function deleteEditor(user_id: String | null) {
+    try {
+      let response = await fetch("/api/editor", {
+        method: "DELETE",
+        body: JSON.stringify({
+          user_id: user_id,
+        }),
+      });
+      if (response.ok) {
+        setSuccess(true);
+        setError("Nodes/Edges Deleted Successfully");
+      } else {
+        setError("Couldn't Delete Editor. Try Again Later.");
+      }
+    } catch (error) {
+      setError("Couldn't Delete Editor. Try Again Later.");
+    }
+  }
+
   function getMenuItems() {
     const images = generateImages(theme);
-    
+
     let result = [];
     for (let image in images) {
       result.push(
@@ -212,6 +232,7 @@ export default function Canvas() {
           {showProfile && (
             <MenuDropdown>
               <LogoutButton />
+              <DeleteButton id={userState.id} delete={deleteEditor}/>
             </MenuDropdown>
           )}
           <MenuButton show={show} toggleMenu={toggleMenu} />

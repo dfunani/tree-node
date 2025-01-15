@@ -2,8 +2,10 @@ import { Authorize, Credentials } from "@/src/public/models/data_classes";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
+import { getToken } from "next-auth/jwt";
+import { NextRequest } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     let response = await request.json();
     let credentials = Credentials.safeParse(response);
@@ -33,7 +35,10 @@ export async function POST(request: Request) {
     data.data.email = client.decrypt(data.data.email);
     data.data.password = "**********";
 
-    return Response.json({ message: data.data }, { status: 200 });
+    return Response.json(
+      { message: { ...data }, Timestamp: new Date().toISOString()},
+      { status: 200 }
+    );
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(

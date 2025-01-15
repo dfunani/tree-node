@@ -1,5 +1,5 @@
 import Editor from "@/src/public/models/editor";
-import { Editor as ed } from "@/src/public/models/data_classes";
+import { Delete, Editor as ed } from "@/src/public/models/data_classes";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 export async function GET(request: Request) {
@@ -49,20 +49,44 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    let db = await connect();
-    let collection = db.collection("nodes");
+    const { db_url, db_name } = getDatabaseConfig();
+    const editor = new Editor(db_url, db_name);
+
     let response = await request.json();
-    let document = await collection.updateOne(
-      { user_id: response.user_id },
-      { $set: response },
-      { upsert: true }
-    );
+    let user = ed.safeParse(response);
+    if (!user.success) {
+      console.log(`Editor Error: ${user.error}`);
+      return Response.json(
+        { message: "Invalid User Request." },
+        { status: 500 }
+      );
+    }
+
+    let document = await editor.update(response.user_id, response);
     return Response.json({ message: document });
   } catch (error) {
     return Response.json({ message: `MongoDB Client Error${error}` });
   }
 }
 
-export async function DELETE(req: Request) {
-  return Response.json({ M });
+export async function DELETE(request: Request) {
+  try {
+    const { db_url, db_name } = getDatabaseConfig();
+    const editor = new Editor(db_url, db_name);
+
+    let response = await request.json();
+    let user = Delete.safeParse(response);
+    if (!user.success) {
+      console.log(`Editor Error: ${user.error}`);
+      return Response.json(
+        { message: "Invalid User Request." },
+        { status: 500 }
+      );
+    }
+
+    let document = await editor.delete(response.user_id);
+    return Response.json({ message: document });
+  } catch (error) {
+    return Response.json({ message: `MongoDB Client Error${error}` });
+  }
 }

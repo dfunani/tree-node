@@ -3,10 +3,12 @@ import {
   Profile,
   Registration,
   PatchDetails,
+  RegisterUser,
+  Delete,
 } from "@/src/public/models/data_classes";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
-import { profile } from "console";
 
+/** Get User profile. */
 export async function GET(request: Request) {
   let query = new URL(request.url);
   let id = query.searchParams.get("id");
@@ -30,7 +32,10 @@ export async function GET(request: Request) {
       );
     }
 
-    return Response.json({ message: editor }, { status: 200 });
+    return Response.json(
+      { message: editor, timestamp: new Date().toISOString() },
+      { status: 200 }
+    );
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
@@ -42,6 +47,7 @@ export async function GET(request: Request) {
   }
 }
 
+/** Create/Register a New User. */
 export async function POST(request: Request) {
   try {
     let response = await request.json();
@@ -71,12 +77,21 @@ export async function POST(request: Request) {
       );
     }
 
+    let user = RegisterUser.safeParse(document);
+    if (!user.success) {
+      console.log(`User Error: ${user.error}`);
+      return Response.json(
+        { message: "Invalid User Respone." },
+        { status: 500 }
+      );
+    }
+
     return Response.json(
       {
         message: {
-          id: document.insertedId,
-          Timestamp: new Date().toISOString(),
+          ...user,
         },
+        timestamp: new Date().toISOString(),
       },
       {
         status: 201,
@@ -93,9 +108,10 @@ export async function POST(request: Request) {
   }
 }
 
+/** Updates User profiles. */
 export async function PATCH(request: Request) {
   try {
-    let response = request.json();
+    let response = await request.json();
     let details = PatchDetails.safeParse(response);
 
     if (!details.success) {
@@ -110,28 +126,89 @@ export async function PATCH(request: Request) {
 
     const { db_url, db_name } = getDatabaseConfig();
 
-    let document = await new User(db_url, db_name).updateUser(details.data);
+    let document = await new User(db_url, db_name).updateUser(
+      details.data.id,
+      details.data
+    );
 
     if (!document) {
       return Response.json(
-        { message: "Invalid User Request.." },
+        { message: "Invalid User Request." },
         {
           status: 500,
         }
       );
     }
 
+    let user = RegisterUser.safeParse(document);
+    if (!user.success) {
+      console.log(`User Error: ${user.error}`);
+      return Response.json(
+        { message: "Invalid User Respone." },
+        { status: 500 }
+      );
+    }
+
     return Response.json(
       {
         message: {
-          id: document.upsertedId,
-          Timestamp: new Date().toISOString(),
+          ...document,
         },
+        Timestamp: new Date().toISOString(),
       },
       {
-        status: 201,
+        status: 200,
       }
     );
+  } catch (error) {
+    console.log(`User Error: ${error}`);
+    return Response.json(
+      { message: `Invalid User Authorization.` },
+      {
+        status: 500,
+      }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { db_url, db_name } = getDatabaseConfig();
+    const client = new User(db_url, db_name);
+
+    let response = await request.json();
+    let user = Delete.safeParse(response);
+    if (!user.success) {
+      console.log(`User Error: ${user.error}`);
+      return Response.json(
+        { message: "Invalid User Request." },
+        { status: 500 }
+      );
+    }
+
+    let result = await client.delete(user.data.user_id);
+    if (!result) {
+      return Response.json(
+        { message: "Invalid User Request." },
+        {
+          status: 500,
+        }
+      );
+    }
+
+    let document = RegisterUser.safeParse(result);
+    if (!document.success) {
+      console.log(`User Error: ${document.error}`);
+      return Response.json(
+        { message: "Invalid User Respone." },
+        { status: 500 }
+      );
+    }
+
+    return Response.json({
+      message: document,
+      Timestamp: new Date().toISOString(),
+    });
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(

@@ -72,20 +72,45 @@ export default class User extends Model {
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
     });
-    return document;
+    return {
+      id: document.insertedId.toString(),
+    };
   }
 
-  async updateUser(profile: { id: string } & Profile) {
+  async updateUser(id: string, profile: Profile) {
     let collection = await this.getCollection();
 
+    let existing_user = await collection.findOne({ _id: new ObjectId(id) });
+    if (!existing_user) {
+      return null;
+    }
+
     let now = new Date();
-    let document = await collection.updateOne(
-      { _id: ObjectId.createFromBase64(profile.id) },
+    await collection.updateOne(
+      { _id: new ObjectId(id) },
       {
-        ...profile,
-        updatedAt: now.toISOString(),
+        $set: {
+          ...profile,
+          updatedAt: now.toISOString(),
+        },
       }
     );
-    return document;
+    return {
+      id: id,
+    };
+  }
+
+  async delete(id: string) {
+    const collection = await this.getCollection();
+
+    let existing_user = await collection.findOne({ _id: new ObjectId(id) });
+    if (!existing_user) {
+      return null;
+    }
+
+    let document = await collection.deleteOne({ _id: new ObjectId(id) });
+    return {
+      id: id,
+    };
   }
 }
