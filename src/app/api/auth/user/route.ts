@@ -108,7 +108,7 @@ export async function POST(request: Request) {
   }
 }
 
-/** Updates User profiles. */
+/** Update User profiles. */
 export async function PATCH(request: Request) {
   try {
     let response = await request.json();
@@ -171,6 +171,7 @@ export async function PATCH(request: Request) {
   }
 }
 
+/** Delete Existing User. */
 export async function DELETE(request: Request) {
   try {
     const { db_url, db_name } = getDatabaseConfig();
@@ -207,7 +208,7 @@ export async function DELETE(request: Request) {
 
     return Response.json({
       message: document,
-      Timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.log(`User Error: ${error}`);

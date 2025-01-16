@@ -1,11 +1,18 @@
 import Model from "@/src/public/models/model";
+import { Editor as Ed } from "@/src/public/models/data_classes";
+import { EditorState } from "@/lib/reducers/editor";
+
+type EditorType = {
+  id: String;
+  user_id: string;
+} & EditorState;
 
 export default class Editor extends Model {
   constructor(db_uri: string, db_name: string) {
     super(db_uri, db_name, "nodes");
   }
 
-  async get(user_id: string): Promise<Ed | null> {
+  async get(user_id: string): Promise<EditorType | null> {
     const collection = await this.getCollection();
 
     let response = await collection.findOne({ user_id: user_id });
@@ -20,7 +27,7 @@ export default class Editor extends Model {
     };
   }
 
-  async update(user_id: String, data: Any) {
+  async update(user_id: String, data: Omit<EditorType, "id">) {
     const collection = await this.getCollection();
 
     let document = await collection.updateOne(
@@ -28,13 +35,17 @@ export default class Editor extends Model {
       { $set: data },
       { upsert: true }
     );
-    return document
+    return { id: user_id };
   }
 
-  async delete(user_id: String){
+  async delete(user_id: String) {
     const collection = await this.getCollection();
 
-    let document = await collection.deleteOne({user_id: user_id})
-    return document
+    let response = await collection.findOne({ user_id: user_id });
+
+    if (!response) return null;
+
+    let document = await collection.deleteOne({ user_id: user_id });
+    return { id: user_id };
   }
 }

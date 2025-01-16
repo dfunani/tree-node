@@ -1,7 +1,12 @@
 import Editor from "@/src/public/models/editor";
-import { Delete, Editor as ed } from "@/src/public/models/data_classes";
+import {
+  Delete,
+  Editor as ed,
+  RegisterUser,
+} from "@/src/public/models/data_classes";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
 
+/** Get the Editor Nodes/Edges. */
 export async function GET(request: Request) {
   try {
     let query = new URL(request.url);
@@ -32,7 +37,8 @@ export async function GET(request: Request) {
 
     return Response.json(
       {
-        message: response,
+        message: { ...user },
+        Timestamp: new Date().toISOString(),
       },
       { status: 200 }
     );
@@ -47,6 +53,7 @@ export async function GET(request: Request) {
   }
 }
 
+/** Save Editor Nodes/Edges. */
 export async function POST(request: Request) {
   try {
     const { db_url, db_name } = getDatabaseConfig();
@@ -57,18 +64,40 @@ export async function POST(request: Request) {
     if (!user.success) {
       console.log(`Editor Error: ${user.error}`);
       return Response.json(
-        { message: "Invalid User Request." },
+        { message: "Invalid Editor Request." },
         { status: 500 }
       );
     }
 
     let document = await editor.update(response.user_id, response);
-    return Response.json({ message: document });
+    if (!document) {
+      return Response.json(
+        { message: "Invalid Editor Request." },
+        {
+          status: 500,
+        }
+      );
+    }
+
+    let result = RegisterUser.safeParse(document);
+    if (!result.success) {
+      console.log(`User Error: ${result.error}`);
+      return Response.json(
+        { message: "Invalid Editor Respone." },
+        { status: 500 }
+      );
+    }
+
+    return Response.json({
+      message: { ...result },
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
-    return Response.json({ message: `MongoDB Client Error${error}` });
+    return Response.json({ message: `Invalid Editor Authorization.` });
   }
 }
 
+/** Delete Editor Nodes/Edges. */
 export async function DELETE(request: Request) {
   try {
     const { db_url, db_name } = getDatabaseConfig();
@@ -85,8 +114,29 @@ export async function DELETE(request: Request) {
     }
 
     let document = await editor.delete(response.user_id);
-    return Response.json({ message: document });
+    if (!document) {
+      return Response.json(
+        { message: "Invalid Editor Request." },
+        {
+          status: 500,
+        }
+      );
+    }
+
+    let result = RegisterUser.safeParse(document);
+    if (!result.success) {
+      console.log(`User Error: ${result.error}`);
+      return Response.json(
+        { message: "Invalid Editor Respone." },
+        { status: 500 }
+      );
+    }
+
+    return Response.json({
+      message: { ...result },
+      timestamp: new Date().toISOString(),
+    });
   } catch (error) {
-    return Response.json({ message: `MongoDB Client Error${error}` });
+    return Response.json({ message: `Invalid Editor Authorization.` });
   }
 }

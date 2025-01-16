@@ -6,7 +6,7 @@ const passwordRegex =
 const dobRegex = /^\d{4}-\d{2}-\d{2}$/;
 const systemDateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
 const objectIDRegex = /^[0-9a-fA-F]{24}$/;
-const imageRegex = /^data:image\/(png|jpg|jpeg);base64,/;
+const imageRegex = /^data:image:(png|jpg|jpeg);base64,/;
 
 export const RegisterUser = z.object({
   id: z.string().regex(objectIDRegex, "Invalid User ID.").nullable(),

@@ -5,6 +5,7 @@ import { getDatabaseConfig } from "@/src/public/utils/factories";
 import { getToken } from "next-auth/jwt";
 import { NextRequest } from "next/server";
 
+/** Retrieves Login Details. */
 export async function POST(request: NextRequest) {
   try {
     let response = await request.json();
