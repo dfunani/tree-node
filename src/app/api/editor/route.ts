@@ -1,43 +1,38 @@
 import Editor from "@/src/public/models/editor";
-import {
-  Delete,
-  Editor as ed,
-  RegisterUser,
-} from "@/src/public/models/data_classes";
+import { FetchUser } from "@/src/public/models/data_classes/auth";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
+import { DeleteEditor, FetchEditor } from "@/src/public/models/data_classes/editor";
 
 /** Get the Editor Nodes/Edges. */
 export async function GET(request: Request) {
+  let query = new URL(request.url);
+  let id = query.searchParams.get("id");
+
+  if (!id)
+    return Response.json({ message: "Invalid Editor ID." }, { status: 400 });
+
   try {
-    let query = new URL(request.url);
-    let id = query.searchParams.get("id");
-
-    if (!id)
-      return Response.json({ message: "Invalid User ID." }, { status: 400 });
-
     const { db_url, db_name } = getDatabaseConfig();
-    const editor = new Editor(db_url, db_name);
-    const response = await editor.get(id);
-
-    if (!response) {
+    const editor = await new Editor(db_url, db_name).get(id);
+    if (!editor) {
       return Response.json(
         { message: "No Editor Data Available for User ID." },
         { status: 404 }
       );
     }
 
-    let user = ed.safeParse(response);
-    if (!user.success) {
-      console.log(`Editor Error: ${user.error}`);
+    let data = FetchEditor.safeParse(editor);
+    if (!data.success) {
+      console.log(`Editor Error: ${data.error}`);
       return Response.json(
-        { message: "Invalid User Respone." },
+        { message: "Invalid Editor Respone." },
         { status: 500 }
       );
     }
 
     return Response.json(
       {
-        message: { ...user },
+        message: { ...data },
         Timestamp: new Date().toISOString(),
       },
       { status: 200 }
@@ -56,21 +51,23 @@ export async function GET(request: Request) {
 /** Save Editor Nodes/Edges. */
 export async function POST(request: Request) {
   try {
-    const { db_url, db_name } = getDatabaseConfig();
-    const editor = new Editor(db_url, db_name);
-
     let response = await request.json();
-    let user = ed.safeParse(response);
-    if (!user.success) {
-      console.log(`Editor Error: ${user.error}`);
+
+    let editorData = FetchEditor.safeParse(response);
+    if (!editorData.success) {
+      console.log(`Editor Error: ${editorData.error}`);
       return Response.json(
         { message: "Invalid Editor Request." },
         { status: 500 }
       );
     }
 
-    let document = await editor.update(response.user_id, response);
-    if (!document) {
+    const { db_url, db_name } = getDatabaseConfig();
+    const editor = new Editor(db_url, db_name).update(
+      editorData.data.user_id,
+      editorData.data
+    );
+    if (!editor) {
       return Response.json(
         { message: "Invalid Editor Request." },
         {
@@ -79,9 +76,9 @@ export async function POST(request: Request) {
       );
     }
 
-    let result = RegisterUser.safeParse(document);
-    if (!result.success) {
-      console.log(`User Error: ${result.error}`);
+    let data = DeleteEditor.safeParse(editor);
+    if (!data.success) {
+      console.log(`Invalid Editor Respone: ${data.error}`);
       return Response.json(
         { message: "Invalid Editor Respone." },
         { status: 500 }
@@ -89,32 +86,31 @@ export async function POST(request: Request) {
     }
 
     return Response.json({
-      message: { ...result },
+      message: { ...data },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    return Response.json({ message: `Invalid Editor Authorization.` });
+    console.log(`Editor Error: ${error}`)
+    return Response.json({ message: `Invalid Editor Operation.` });
   }
 }
 
 /** Delete Editor Nodes/Edges. */
 export async function DELETE(request: Request) {
   try {
-    const { db_url, db_name } = getDatabaseConfig();
-    const editor = new Editor(db_url, db_name);
-
     let response = await request.json();
-    let user = Delete.safeParse(response);
-    if (!user.success) {
-      console.log(`Editor Error: ${user.error}`);
+    let deleteEditor = DeleteEditor.safeParse(response);
+    
+    if (!deleteEditor.success) {
+      console.log(`Editor Error: ${deleteEditor.error}`);
       return Response.json(
-        { message: "Invalid User Request." },
+        { message: "Invalid Editor Request." },
         { status: 500 }
       );
     }
-
-    let document = await editor.delete(response.user_id);
-    if (!document) {
+    const { db_url, db_name } = getDatabaseConfig();
+    const editor = await new Editor(db_url, db_name).delete(response.user_id);
+    if (!editor) {
       return Response.json(
         { message: "Invalid Editor Request." },
         {
@@ -123,9 +119,9 @@ export async function DELETE(request: Request) {
       );
     }
 
-    let result = RegisterUser.safeParse(document);
-    if (!result.success) {
-      console.log(`User Error: ${result.error}`);
+    let data = DeleteEditor.safeParse(editor);
+    if (!data.success) {
+      console.log(`Editor Error: ${data.error}`);
       return Response.json(
         { message: "Invalid Editor Respone." },
         { status: 500 }
@@ -137,6 +133,7 @@ export async function DELETE(request: Request) {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
+    console.log(`Editor Error: ${error}`);
     return Response.json({ message: `Invalid Editor Authorization.` });
   }
 }

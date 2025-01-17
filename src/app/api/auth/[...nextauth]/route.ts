@@ -3,9 +3,10 @@ import NextAuth from "next-auth";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
 import { SessionProps, TokenProps } from "@/src/public/types/auth";
-import { Authorize } from "@/src/public/models/data_classes";
+import { LoginUser } from "@/src/public/models/data_classes/auth";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
 
+/** Manages Next-Auth API's. */
 const authOptions = {
   providers: [
     Credentials({
@@ -24,7 +25,7 @@ const authOptions = {
         let user = await new User(db_url, db_name).getUser(credentials);
         if (!user) return null;
 
-        let data = Authorize.safeParse(user);
+        let data = LoginUser.safeParse(user);
         if (!data.success) return null;
 
         return data.data;

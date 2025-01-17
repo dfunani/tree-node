@@ -1,5 +1,5 @@
 import Model from "@/src/public/models/model";
-import { Editor as Ed } from "@/src/public/models/data_classes";
+import { Editor as Ed } from "@/src/public/models/data_classes/auth";
 import { EditorState } from "@/lib/reducers/editor";
 
 type EditorType = {
@@ -35,7 +35,7 @@ export default class Editor extends Model {
       { $set: data },
       { upsert: true }
     );
-    return { id: user_id };
+    return { user_id: user_id };
   }
 
   async delete(user_id: String) {
@@ -46,6 +46,6 @@ export default class Editor extends Model {
     if (!response) return null;
 
     let document = await collection.deleteOne({ user_id: user_id });
-    return { id: user_id };
+    return { user_id: user_id };
   }
 }

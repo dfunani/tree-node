@@ -1,11 +1,10 @@
 import User from "@/src/public/models/users";
 import {
-  Profile,
-  Registration,
+  UserProfile,
   PatchDetails,
   RegisterUser,
-  Delete,
-} from "@/src/public/models/data_classes";
+  FetchUser,
+} from "@/src/public/models/data_classes/auth";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 /** Get User profile. */
@@ -19,13 +18,16 @@ export async function GET(request: Request) {
   try {
     const { db_url, db_name } = getDatabaseConfig();
 
-    let response = await new User(db_url, db_name).getProfile(id);
-    if (!response)
-      return Response.json({ message: "User Does Not Exist" }, { status: 404 });
+    let profile = await new User(db_url, db_name).getProfile(id);
+    if (!profile)
+      return Response.json(
+        { message: "User Profile Does Not Exist" },
+        { status: 404 }
+      );
 
-    let editor = Profile.safeParse(response);
-    if (!editor.success) {
-      console.log(`User Error: ${editor.error}`);
+    let data = UserProfile.safeParse(profile);
+    if (!data.success) {
+      console.log(`User Error: ${data.error}`);
       return Response.json(
         { message: "Invalid User Respone." },
         { status: 500 }
@@ -33,13 +35,13 @@ export async function GET(request: Request) {
     }
 
     return Response.json(
-      { message: editor, timestamp: new Date().toISOString() },
+      { message: { ...data }, timestamp: new Date().toISOString() },
       { status: 200 }
     );
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
-      { message: `Invalid User ID.` },
+      { message: `Invalid User Operation.` },
       {
         status: 500,
       }
@@ -51,7 +53,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     let response = await request.json();
-    let registration = Registration.safeParse(response);
+    let registration = RegisterUser.safeParse(response);
     if (!registration.success) {
       console.log(`Invalid User Request: ${registration.error}`);
       return Response.json(
@@ -64,11 +66,8 @@ export async function POST(request: Request) {
 
     const { db_url, db_name } = getDatabaseConfig();
 
-    let document = await new User(db_url, db_name).createUser(
-      registration.data
-    );
-
-    if (!document) {
+    let user = await new User(db_url, db_name).createUser(registration.data);
+    if (!user) {
       return Response.json(
         { message: "User Already Exists." },
         {
@@ -77,9 +76,9 @@ export async function POST(request: Request) {
       );
     }
 
-    let user = RegisterUser.safeParse(document);
-    if (!user.success) {
-      console.log(`User Error: ${user.error}`);
+    let data = FetchUser.safeParse(user);
+    if (!data.success) {
+      console.log(`Invalid User Respone: ${data.error}`);
       return Response.json(
         { message: "Invalid User Respone." },
         { status: 500 }
@@ -89,7 +88,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         message: {
-          ...user,
+          ...data,
         },
         timestamp: new Date().toISOString(),
       },
@@ -112,10 +111,10 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     let response = await request.json();
-    let details = PatchDetails.safeParse(response);
+    let patchDetails = PatchDetails.safeParse(response);
 
-    if (!details.success) {
-      console.log(`Invalid User Request: ${details.error}`);
+    if (!patchDetails.success) {
+      console.log(`Invalid User Request: ${patchDetails.error}`);
       return Response.json(
         { message: `Invalid User Update Request.` },
         {
@@ -126,12 +125,12 @@ export async function PATCH(request: Request) {
 
     const { db_url, db_name } = getDatabaseConfig();
 
-    let document = await new User(db_url, db_name).updateUser(
-      details.data.id,
-      details.data
+    let user = await new User(db_url, db_name).updateUser(
+      patchDetails.data.id,
+      patchDetails.data
     );
 
-    if (!document) {
+    if (!user) {
       return Response.json(
         { message: "Invalid User Request." },
         {
@@ -140,9 +139,9 @@ export async function PATCH(request: Request) {
       );
     }
 
-    let user = RegisterUser.safeParse(document);
-    if (!user.success) {
-      console.log(`User Error: ${user.error}`);
+    let data = FetchUser.safeParse(user);
+    if (!data.success) {
+      console.log(`Invalid User Respone: ${data.error}`);
       return Response.json(
         { message: "Invalid User Respone." },
         { status: 500 }
@@ -152,7 +151,7 @@ export async function PATCH(request: Request) {
     return Response.json(
       {
         message: {
-          ...document,
+          ...data,
         },
         Timestamp: new Date().toISOString(),
       },
@@ -163,7 +162,7 @@ export async function PATCH(request: Request) {
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
-      { message: `Invalid User Authorization.` },
+      { message: `Invalid User Operation.` },
       {
         status: 500,
       }
@@ -175,20 +174,19 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
   try {
     const { db_url, db_name } = getDatabaseConfig();
-    const client = new User(db_url, db_name);
+    const response = await request.json();
 
-    let response = await request.json();
-    let user = Delete.safeParse(response);
-    if (!user.success) {
-      console.log(`User Error: ${user.error}`);
+    let deleteUser = FetchUser.safeParse(response);
+    if (!deleteUser.success) {
+      console.log(`Invalid User Request: ${deleteUser.error}`);
       return Response.json(
         { message: "Invalid User Request." },
         { status: 500 }
       );
     }
 
-    let result = await client.delete(user.data.user_id);
-    if (!result) {
+    const user = await new User(db_url, db_name).delete(deleteUser.data.id);
+    if (!user) {
       return Response.json(
         { message: "Invalid User Request." },
         {
@@ -197,9 +195,9 @@ export async function DELETE(request: Request) {
       );
     }
 
-    let document = RegisterUser.safeParse(result);
-    if (!document.success) {
-      console.log(`User Error: ${document.error}`);
+    let data = FetchUser.safeParse(user);
+    if (!data.success) {
+      console.log(`User Error: ${data.error}`);
       return Response.json(
         { message: "Invalid User Respone." },
         { status: 500 }
@@ -207,13 +205,13 @@ export async function DELETE(request: Request) {
     }
 
     return Response.json({
-      message: document,
+      message: { ...data },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
-      { message: `Invalid User Authorization.` },
+      { message: `Invalid User Operation.` },
       {
         status: 500,
       }

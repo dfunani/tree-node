@@ -1,12 +1,10 @@
-import { Authorize, Credentials } from "@/src/public/models/data_classes";
+import { LoginUser, Credentials } from "@/src/public/models/data_classes/auth";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
-import { getToken } from "next-auth/jwt";
-import { NextRequest } from "next/server";
 
 /** Retrieves Login Details. */
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     let response = await request.json();
     let credentials = Credentials.safeParse(response);
@@ -23,7 +21,7 @@ export async function POST(request: NextRequest) {
     if (!user)
       return Response.json({ message: "User Does Not Exist" }, { status: 404 });
 
-    let data = Authorize.safeParse(user);
+    let data = LoginUser.safeParse(user);
     if (!data.success) {
       console.log(`Invalid User Response: ${data.error}`);
       return Response.json(
@@ -37,13 +35,13 @@ export async function POST(request: NextRequest) {
     data.data.password = "**********";
 
     return Response.json(
-      { message: { ...data }, Timestamp: new Date().toISOString()},
+      { message: { ...data }, Timestamp: new Date().toISOString() },
       { status: 200 }
     );
   } catch (error) {
     console.log(`User Error: ${error}`);
     return Response.json(
-      { message: `Invalid User Authorization.` },
+      { message: `Invalid User Operation.` },
       {
         status: 500,
       }

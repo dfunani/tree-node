@@ -1,7 +1,6 @@
 import { Session, DefaultSession, User } from "next-auth";
 import { DefaultJWT, JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
-import { StaticImageData } from "next/image";
 
 export type TokenProps = {
   token: JWT;
@@ -35,11 +34,3 @@ declare module "next-auth" {
   }
 }
 
-export type UpdateNodeProfile = {
-  name?: string;
-  surname?: string;
-  dob?: string;
-  city?: string;
-  country?: string;
-  image?: string | null | StaticImageData;
-};
