@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     }
 
     const { db_url, db_name } = getDatabaseConfig();
-    const editor = new Editor(db_url, db_name).update(
+    const editor = await new Editor(db_url, db_name).update(
       editorData.data.user_id,
       editorData.data
     );
@@ -109,7 +109,7 @@ export async function DELETE(request: Request) {
       );
     }
     const { db_url, db_name } = getDatabaseConfig();
-    const editor = await new Editor(db_url, db_name).delete(response.user_id);
+    const editor = await new Editor(db_url, db_name).delete(deleteEditor.data.user_id);
     if (!editor) {
       return Response.json(
         { message: "Invalid Editor Request." },
@@ -121,7 +121,7 @@ export async function DELETE(request: Request) {
 
     let data = DeleteEditor.safeParse(editor);
     if (!data.success) {
-      console.log(`Editor Error: ${data.error}`);
+      console.log(`Invalid Editor Response: ${data.error}`);
       return Response.json(
         { message: "Invalid Editor Respone." },
         { status: 500 }
@@ -129,11 +129,11 @@ export async function DELETE(request: Request) {
     }
 
     return Response.json({
-      message: { ...result },
+      message: { ...data },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
     console.log(`Editor Error: ${error}`);
-    return Response.json({ message: `Invalid Editor Authorization.` });
+    return Response.json({ message: `Invalid Editor Operation.` });
   }
 }
