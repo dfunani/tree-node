@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 
 import styles from "@/src/public/styles/auth.module.css";
 import { Registrations } from "@/src/public/utils/types";
-import AddButton from "./addButton";
+import AddButton from "./add-button";
 
 type Props = {
   registration: Omit<Registrations, "email" | "password">;

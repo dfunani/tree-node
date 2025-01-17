@@ -1,7 +1,7 @@
 import { ChangeEvent } from "react";
 
 import styles from "@/src/public/styles/auth.module.css";
-import AddButton from "@/src/components/addButton";
+import AddButton from "@/src/components/add-button";
 import { RegistrationType } from "@/src/public/types/user";
 import { handleImageConversion } from "@/src/public/utils/converters";
 
@@ -10,6 +10,7 @@ type Props = {
   handleUpdateRegistration: (key: string, value: any) => void;
   handleRegistration: () => void;
 };
+
 export default function Registration(props: Props) {
   async function handleUpdateImage(file: File) {
     const image = await handleImageConversion(file);
