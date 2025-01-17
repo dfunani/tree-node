@@ -3,11 +3,11 @@
 import { ChangeEvent } from "react";
 
 import styles from "@/src/public/styles/auth.module.css";
-import { Logins } from "@/src/public/utils/types";
 import { useParams, useRouter } from "next/navigation";
+import { CredentialsType } from "@/src/public/types/user";
 
 type Props = {
-  credentials: Logins;
+  credentials: CredentialsType;
   handleUpdateCredentials: (key: string, value: string) => void;
   handleLogin: () => void;
 };
