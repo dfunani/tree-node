@@ -1,5 +1,4 @@
 import Editor from "@/src/public/models/editor";
-import { FetchUser } from "@/src/public/models/data_classes/auth";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
 import { DeleteEditor, FetchEditor } from "@/src/public/models/data_classes/editor";
 

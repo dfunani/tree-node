@@ -11,7 +11,7 @@ export type RegistrationType = {
   image?: string | null | StaticImageData;
 };
 
-export type LoginType = {
+export type CredentialsType = {
   email: string;
   password: string;
 };

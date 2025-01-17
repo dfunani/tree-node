@@ -2,45 +2,28 @@
 
 import styles from "@/src/public/styles/auth.module.css";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { Logins } from "@/src/public/utils/types";
 import Login from "@/src/components/login";
-
-const Errors = {
-  Conflict: "User Already Exists.",
-  Invalid: "Invalid Credentials Provided.",
-  Created: "Successfully Registered",
-};
+import { CredentialsType } from "@/src/public/types/user";
+import { handleErrors } from "@/src/public/errors/messages";
 
 export default function Page() {
   const router = useRouter();
-  let query = useSearchParams();
-  let resolve = query.get("resolve");
-  let errorText = handleErrors(resolve);
+  const query = useSearchParams();
+  const resolve = query.get("resolve");
+  let resolveMessage = null;
 
-  const [credentials, setCredentials] = useState<Logins>({
+  const [credentials, setCredentials] = useState<CredentialsType>({
     email: "",
     password: "",
   });
-
-  function handleErrors(error: string | null) {
-    switch (error) {
-      case "Conflict":
-        return Errors[error];
-      case "Invalid":
-        return Errors[error];
-      case "Created":
-        return Errors[error];
-      default:
-        return null;
-    }
-  }
+  const [errorText, setErrorText] = useState<string | null>(null);
 
   function handleUpdateCredentials(key: string, value: string) {
-    setCredentials((prevCreds: Logins) => {
+    setCredentials((prevCreds: CredentialsType) => {
       return { ...prevCreds, [key]: value };
     });
   }
@@ -56,6 +39,16 @@ export default function Page() {
       router.push("/auth/user/login?resolve=Invalid");
     } else router.push("/");
   }
+
+  useEffect(() => {
+    if (resolve) {
+      setErrorText(handleErrors("user", resolve));
+      setTimeout(() => {
+        router.push("/auth/user/login");
+        setErrorText(null);
+      }, 2000);
+    }
+  });
 
   return (
     <div className={styles["login-container"]}>
