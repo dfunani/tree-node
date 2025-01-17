@@ -1,9 +1,9 @@
 "use client";
 
 import { ChangeEvent } from "react";
+import { useParams, useRouter } from "next/navigation";
 
 import styles from "@/src/public/styles/auth.module.css";
-import { useParams, useRouter } from "next/navigation";
 import { CredentialsType } from "@/src/public/types/user";
 
 type Props = {
@@ -60,6 +60,14 @@ export default function Login(props: Props) {
             onClick={() => router.push("/auth/user/register")}
           >
             Register
+          </button>
+        )}
+        {param === "register" && (
+          <button
+            className={styles.button}
+            onClick={() => router.push("/auth/user/login")}
+          >
+            Login
           </button>
         )}
       </div>

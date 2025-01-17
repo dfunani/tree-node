@@ -1,7 +1,7 @@
 import { ChangeEvent } from "react";
 
 import styles from "@/src/public/styles/auth.module.css";
-import AddButton from "./addButton";
+import AddButton from "@/src/components/addButton";
 import { RegistrationType } from "@/src/public/types/user";
 import { handleImageConversion } from "@/src/public/utils/converters";
 
