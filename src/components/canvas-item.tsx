@@ -1,11 +1,13 @@
-import styles from "@/src/components/canvas.module.css";
+import { useState } from "react";
 import { Handle, Position } from "@xyflow/react";
+import { useDispatch, useSelector } from "react-redux";
+import Image from "next/image";
 import { v4 as uuid4 } from "uuid";
+
+import styles from "@/src/components/canvas.module.css";
 import { EdgeType, NodeDataType, NodeType } from "@/src/public/types/editor";
 import { StateReducerType } from "@/src/public/types/states";
 import Modal from "@/src/components/modal";
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { UPDATE } from "@/lib/reducers/editor";
 
 type Props = {
@@ -57,7 +59,7 @@ export default function CanvasItem(props: Props) {
     setClicked(false);
   }
 
-  async function updateNodes(id: string, new_node: any) {
+  async function updateNodes(id: string, new_node: NodeType) {
     const nodes = editorState.nodes?.map((node: NodeType) => {
       if (node.id === id) {
         return {
@@ -112,10 +114,12 @@ export default function CanvasItem(props: Props) {
       {renderHandlers()}
 
       {!clicked && (
-        <img
+        <Image
           className={styles["node-img"]}
           src={props.data.image as string}
           alt={props.data.label}
+          width={40}
+          height={40}
         />
       )}
 

@@ -1,6 +1,5 @@
 import styles from "@/src/components/button.module.css";
-import { signOut } from "next-auth/react";
-import { StaticImageData } from "next/image";
+import Image, { StaticImageData } from "next/image";
 
 type Props = {
   image: string | null | StaticImageData;
@@ -14,7 +13,7 @@ export default function ProfilePicture(props: Props) {
       onClick={() => props.toggleMenu()}
     >
       {props.image ? (
-        <img src={props.image as string} alt="Profile-Picture" />
+        <Image src={props.image as string} alt="Profile-Picture" width={40} height={40} />
       ) : (
         <div>{props.name ? props.name[0].toUpperCase() : ""}</div>
       )}

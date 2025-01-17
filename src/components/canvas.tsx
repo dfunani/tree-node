@@ -21,17 +21,12 @@ import MenuButton from "@/src/components/menu-button";
 import MenuDropdown from "@/src/components/menu-dropdown";
 import MenuItem from "@/src/components/menu-item";
 import { buildDate, generateImages } from "@/src/public/utils/factories";
-import {
-  Nodes,
-  Position,
-  Edges,
-  Profile,
-  StateReducer,
-} from "@/src/public/utils/types";
-import Image, { StaticImageData } from "next/image";
+import { NodeType, PositionType } from "@/src/public/types/editor";
+import { StateReducerType } from "../public/types/states";
+import { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
 import SaveButton from "@/src/components/save-button";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import LogoutButton from "./logout-button";
 import DeleteButton from "./delete-button";
 import Error from "next/error";
@@ -49,9 +44,9 @@ export default function Canvas() {
   const { data: session } = useSession();
 
   const dispatch = useDispatch();
-  const userState = useSelector((state: StateReducer) => state.user);
-  const editorState = useSelector((state: StateReducer) => state.editor);
-  const profileState = useSelector((state: StateReducer) => state.profile);
+  const userState = useSelector((state: StateReducerType) => state.user);
+  const editorState = useSelector((state: StateReducerType) => state.editor);
+  const profileState = useSelector((state: StateReducerType) => state.profile);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
@@ -66,10 +61,10 @@ export default function Canvas() {
   }
 
   function toggleMenu() {
-    setShow((prev: Boolean) => !prev);
+    setShow((prev: boolean) => !prev);
   }
   function toggleProfile() {
-    setshowProfile((prev: Boolean) => !prev);
+    setshowProfile((prev: boolean) => !prev);
   }
 
   const onConnect = useCallback(
@@ -84,9 +79,9 @@ export default function Canvas() {
     [editorState]
   );
 
-  function addNode(position: Position, src: StaticImageData | string | null) {
+  function addNode(position: PositionType, src: StaticImageData | string | null) {
     let id = uuid4().toString();
-    let node: Nodes = {
+    let node: NodeType = {
       id: id,
       position: position,
       type: "Canvas-Item",
@@ -232,7 +227,7 @@ export default function Canvas() {
           {showProfile && (
             <MenuDropdown>
               <LogoutButton />
-              <DeleteButton id={userState.id} delete={deleteEditor}/>
+              <DeleteButton id={userState.id} delete={deleteEditor} />
             </MenuDropdown>
           )}
           <MenuButton show={show} toggleMenu={toggleMenu} />
