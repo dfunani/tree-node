@@ -1,27 +1,22 @@
 import { ChangeEvent, useState } from "react";
 
 import styles from "@/src/public/styles/auth.module.css";
-import { Registrations } from "@/src/public/utils/types";
 import AddButton from "./addButton";
-import { UpdateNodeProfile } from "../public/types/auth";
+import { RegistrationType } from "@/src/public/types/user";
+import { handleImageConversion } from "@/src/public/utils/converters";
 
 type Props = {
-  registration: Omit<Registrations, "email" | "password"> | UpdateNodeProfile;
+  registration: Omit<RegistrationType, "email" | "password">;
   handleUpdateRegistration: (key: string, value: any) => void;
   handleRegistration: () => void;
 };
 export default function Registration(props: Props) {
-  function handleImageConversion(file: File) {
-    const client = new FileReader();
-    client.readAsArrayBuffer(file);
-    client.onload = (event: ProgressEvent<FileReader>) => {
-      const arrayBuffer: unknown = event.target?.result;
-      if (arrayBuffer) {
-        const buffer = Buffer.from(arrayBuffer as Buffer);
-        const base64String = buffer.toString("base64");
-        props.handleUpdateRegistration("image", `data:${file.type};base64,${base64String}`);
-      }
-    };
+  async function handleUpdateImage(file: File) {
+    const image = await handleImageConversion(file);
+    props.handleUpdateRegistration(
+      "image",
+      `data:${file.type};base64,${image}`
+    );
   }
   return (
     <div className={styles["form"]}>
@@ -32,6 +27,7 @@ export default function Registration(props: Props) {
           name="Picture"
           id="picture"
           accept="image/*"
+          required
           onChange={async (event: ChangeEvent) => {
             let response = event.target as HTMLInputElement;
             if (!response) return;
@@ -39,7 +35,7 @@ export default function Registration(props: Props) {
             let files = response.files;
             if (!files) return;
 
-            handleImageConversion(files[0]);
+            handleUpdateImage(files[0]);
           }}
         />
         <div className={styles["file-button"]}>
@@ -58,6 +54,7 @@ export default function Registration(props: Props) {
         aria-label="Name"
         type="name"
         placeholder="Name"
+        required
         onChange={(event: ChangeEvent) =>
           props.handleUpdateRegistration(
             "name",
@@ -70,6 +67,7 @@ export default function Registration(props: Props) {
         aria-label="Surname"
         type="text"
         placeholder="Surname"
+        required
         onChange={(event: ChangeEvent) =>
           props.handleUpdateRegistration(
             "surname",
@@ -81,6 +79,7 @@ export default function Registration(props: Props) {
         className={styles.input}
         aria-label="Date of Birth"
         type="date"
+        required
         placeholder="Date of Birth"
         onChange={(event: ChangeEvent) =>
           props.handleUpdateRegistration(
@@ -92,6 +91,7 @@ export default function Registration(props: Props) {
       <input
         className={styles.input}
         aria-label="City"
+        required
         type="text"
         placeholder="City"
         onChange={(event: ChangeEvent) =>
@@ -104,6 +104,7 @@ export default function Registration(props: Props) {
       <input
         className={styles.input}
         aria-label="Country"
+        required
         type="text"
         placeholder="Country"
         onChange={(event: ChangeEvent) =>

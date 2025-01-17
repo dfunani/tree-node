@@ -8,14 +8,14 @@ import { useRouter } from "next/navigation";
 import Login from "@/src/components/login";
 import Registration from "@/src/components/registration";
 
-import { Registrations } from "@/src/public/utils/types";
 import { validateEmail, validatePassword } from "@/src/public/utils/validators";
+import { RegistrationType } from "@/src/public/types/user";
 
 export default function Page() {
   const router = useRouter();
   const [submit, setSubmit] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [registration, setRegistration] = useState<Registrations>({
+  const [registration, setRegistration] = useState<RegistrationType>({
     email: "",
     password: "",
     name: "",
@@ -37,7 +37,7 @@ export default function Page() {
   }
 
   function handleUpdateRegistration(key: string, value: string) {
-    setRegistration((prevRegistration: Registrations) => {
+    setRegistration((prevRegistration: RegistrationType) => {
       return { ...prevRegistration, [key]: value };
     });
   }
@@ -51,10 +51,12 @@ export default function Page() {
       },
     });
 
-    if (response.ok || response.status == 409) {
-      router.push(`/auth/user/login?resolve=${response.statusText}`);
+    if (response.ok) {
+      router.push(`/auth/user/login?resolve=Created`);
+    } else if (response.status == 409) {
+      router.push(`/auth/user/login?resolve=Conflict`);
     } else {
-      setError("Registration Failed. Please Try Again Later.");
+      setError("Invalid Submission. Update Required Fields.");
     }
   }
   return (

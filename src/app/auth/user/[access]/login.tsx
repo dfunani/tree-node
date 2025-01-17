@@ -14,7 +14,6 @@ export default function Page() {
   const router = useRouter();
   const query = useSearchParams();
   const resolve = query.get("resolve");
-  let resolveMessage = null;
 
   const [credentials, setCredentials] = useState<CredentialsType>({
     email: "",
