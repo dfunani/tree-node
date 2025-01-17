@@ -4,8 +4,8 @@ import { CLEAR as clearEditor } from "@/lib/reducers/editor";
 
 
 type Props = {
-  id: String | null;
-  delete: (id: String | null) => void;
+  id: string | null;
+  delete: (id: string | null) => void;
 };
 
 export default function DeleteButton(props: Props) {

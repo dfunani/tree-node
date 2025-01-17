@@ -11,8 +11,8 @@ import Register from "@/src/app/auth/user/[access]/register";
 const SLUGS = ["login", "register"];
 
 export default function Page() {
-  let { access } = useParams();
-  let param = access?.toString() ?? "";
+  const { access } = useParams();
+  const param = access?.toString() ?? "";
 
   if (!SLUGS.includes(param)) {
     return <Error statusCode={404} />;

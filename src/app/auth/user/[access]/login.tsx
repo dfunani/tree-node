@@ -28,7 +28,7 @@ export default function Page() {
   }
 
   async function handleLogin() {
-    let response = await signIn("credentials", {
+    const response = await signIn("credentials", {
       ...credentials,
       redirect: false,
       callbackUrl: "/",
@@ -47,7 +47,7 @@ export default function Page() {
         setErrorText(null);
       }, 2000);
     }
-  });
+  }, [resolve, router]);
 
   return (
     <div className={styles["login-container"]}>

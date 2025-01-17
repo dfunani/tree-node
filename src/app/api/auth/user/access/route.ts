@@ -6,8 +6,8 @@ import { getDatabaseConfig } from "@/src/public/utils/factories";
 /** Retrieves Login Details. */
 export async function POST(request: Request) {
   try {
-    let response = await request.json();
-    let credentials = Credentials.safeParse(response);
+    const response = await request.json();
+    const credentials = Credentials.safeParse(response);
     if (!credentials.success) {
       return Response.json(
         { message: "Invalid User Request." },
@@ -17,11 +17,11 @@ export async function POST(request: Request) {
 
     const { db_url, db_name } = getDatabaseConfig();
 
-    let user = await new User(db_url, db_name).getUser(credentials.data);
+    const user = await new User(db_url, db_name).getUser(credentials.data);
     if (!user)
       return Response.json({ message: "User Does Not Exist" }, { status: 404 });
 
-    let data = LoginUser.safeParse(user);
+    const data = LoginUser.safeParse(user);
     if (!data.success) {
       console.log(`Invalid User Response: ${data.error}`);
       return Response.json(

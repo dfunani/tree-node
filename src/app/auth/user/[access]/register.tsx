@@ -43,7 +43,7 @@ export default function Page() {
   }
 
   async function handleRegistration() {
-    let response = await fetch("/api/auth/user", {
+    const response = await fetch("/api/auth/user", {
       method: "POST",
       body: JSON.stringify(registration),
       headers: {

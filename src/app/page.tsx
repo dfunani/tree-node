@@ -16,7 +16,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!session) router.push("/auth/user/login");
-  }, []);
+  });
 
   return (
     <div className="main">

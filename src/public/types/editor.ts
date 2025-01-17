@@ -1,7 +1,7 @@
 import { ProfileType } from "@/src/public/types/user";
 
 export type EditorType = {
-  id: String;
+  id: string;
   user_id: string;
 } & EditorStateType;
 

@@ -4,8 +4,8 @@ import { DeleteEditor, FetchEditor } from "@/src/public/models/data_classes/edit
 
 /** Get the Editor Nodes/Edges. */
 export async function GET(request: Request) {
-  let query = new URL(request.url);
-  let id = query.searchParams.get("id");
+  const query = new URL(request.url);
+  const id = query.searchParams.get("id");
 
   if (!id)
     return Response.json({ message: "Invalid Editor ID." }, { status: 400 });
@@ -20,7 +20,7 @@ export async function GET(request: Request) {
       );
     }
 
-    let data = FetchEditor.safeParse(editor);
+    const data = FetchEditor.safeParse(editor);
     if (!data.success) {
       console.log(`Editor Error: ${data.error}`);
       return Response.json(
@@ -50,9 +50,9 @@ export async function GET(request: Request) {
 /** Save Editor Nodes/Edges. */
 export async function POST(request: Request) {
   try {
-    let response = await request.json();
+    const response = await request.json();
 
-    let editorData = FetchEditor.safeParse(response);
+    const editorData = FetchEditor.safeParse(response);
     if (!editorData.success) {
       console.log(`Editor Error: ${editorData.error}`);
       return Response.json(
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let data = DeleteEditor.safeParse(editor);
+    const data = DeleteEditor.safeParse(editor);
     if (!data.success) {
       console.log(`Invalid Editor Respone: ${data.error}`);
       return Response.json(
@@ -97,8 +97,8 @@ export async function POST(request: Request) {
 /** Delete Editor Nodes/Edges. */
 export async function DELETE(request: Request) {
   try {
-    let response = await request.json();
-    let deleteEditor = DeleteEditor.safeParse(response);
+    const response = await request.json();
+    const deleteEditor = DeleteEditor.safeParse(response);
     
     if (!deleteEditor.success) {
       console.log(`Editor Error: ${deleteEditor.error}`);
@@ -118,7 +118,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    let data = DeleteEditor.safeParse(editor);
+    const data = DeleteEditor.safeParse(editor);
     if (!data.success) {
       console.log(`Invalid Editor Response: ${data.error}`);
       return Response.json(

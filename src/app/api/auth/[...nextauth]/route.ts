@@ -16,16 +16,16 @@ const authOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials, _) {
+      async authorize(credentials) {
         if (!credentials || !credentials.email || !credentials.password)
           return null;
 
         const { db_url, db_name } = getDatabaseConfig();
 
-        let user = await new User(db_url, db_name).getUser(credentials);
+        const user = await new User(db_url, db_name).getUser(credentials);
         if (!user) return null;
 
-        let data = LoginUser.safeParse(user);
+        const data = LoginUser.safeParse(user);
         if (!data.success) return null;
 
         return data.data;

@@ -23,7 +23,7 @@ export default class Editor extends Model {
     };
   }
 
-  async update(user_id: String, data: Omit<EditorType, "id">) {
+  async update(user_id: string, data: Omit<EditorType, "id">) {
     const collection = await this.getCollection();
 
     let document = await collection.updateOne(
@@ -34,7 +34,7 @@ export default class Editor extends Model {
     return { user_id: user_id };
   }
 
-  async delete(user_id: String) {
+  async delete(user_id: string) {
     const collection = await this.getCollection();
 
     let response = await collection.findOne({ user_id: user_id });

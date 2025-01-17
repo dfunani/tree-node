@@ -1,40 +1,33 @@
-import Error from "next/error";
-import Image from "next/image";
 import styles from "@/src/components/canvas.module.css";
 import { Handle, Position } from "@xyflow/react";
 import { v4 as uuid4 } from "uuid";
-import { Edges, NodeData, Nodes, StateReducer } from "@/src/public/utils/types";
+import { EdgeType, NodeDataType, NodeType } from "@/src/public/types/editor";
+import { StateReducerType } from "@/src/public/types/states";
 import Modal from "@/src/components/modal";
-import { useEffect, useState } from "react";
-import { GlobalProvider, useGlobalContext } from "@/src/public/utils/context";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { UPDATE } from "@/lib/reducers/editor";
 
 type Props = {
   id: string;
-  data: NodeData;
+  data: NodeDataType;
   isConnectable: boolean | undefined;
 };
 
 export default function CanvasItem(props: Props) {
-  const router = useRouter();
-
   const dispatch = useDispatch();
 
-  const userState = useSelector((state: StateReducer) => state.user);
-  const profileState = useSelector((state: StateReducer) => state.profile);
-  const editorState = useSelector((state: StateReducer) => state.editor);
+  const userState = useSelector((state: StateReducerType) => state.user);
+  const editorState = useSelector((state: StateReducerType) => state.editor);
 
   const [clicked, setClicked] = useState(false);
   const [modal, setModal] = useState(false);
-  const { data: session } = useSession();
-  const [outcome, setOutcome] = useState<String | null>(null);
+  const [outcome, setOutcome] = useState<string | null>(null);
+  console.log(outcome);
 
-  async function saveNodes(nodes: Nodes[], edges: Edges[]) {
+  async function saveNodes(nodes: NodeType[], edges: EdgeType[]) {
     try {
-      let response = await fetch("/api/editor", {
+      const response = await fetch("/api/editor", {
         method: "POST",
         body: JSON.stringify({
           user_id: userState.id,
@@ -48,22 +41,24 @@ export default function CanvasItem(props: Props) {
       } else {
         setOutcome("Couldn't Save Editor. Try Again Later.");
       }
-    } catch (error) {
+    } catch {
       setOutcome("Couldn't Save Editor. Try Again Later.");
     }
   }
 
   async function deleteNodes(id: string) {
-    let nodes = editorState.nodes?.filter((value: Nodes) => value.id !== id);
-    let edges = editorState.edges?.filter(
-      (value: Edges) => value.source !== id && value.target !== id
+    const nodes = editorState.nodes?.filter(
+      (value: NodeType) => value.id !== id
+    );
+    const edges = editorState.edges?.filter(
+      (value: EdgeType) => value.source !== id && value.target !== id
     );
     saveNodes(nodes ?? [], edges ?? []);
     setClicked(false);
   }
 
   async function updateNodes(id: string, new_node: any) {
-    let nodes = editorState.nodes?.map((node: Nodes) => {
+    const nodes = editorState.nodes?.map((node: NodeType) => {
       if (node.id === id) {
         return {
           ...node,
@@ -83,9 +78,9 @@ export default function CanvasItem(props: Props) {
       Position.Left,
       Position.Right,
     ];
-    let result = [];
+    const result = [];
 
-    for (let position of positions) {
+    for (const position of positions) {
       result.push(
         <Handle
           key={uuid4()}

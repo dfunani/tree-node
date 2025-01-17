@@ -9,8 +9,8 @@ import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 /** Get User profile. */
 export async function GET(request: Request) {
-  let query = new URL(request.url);
-  let id = query.searchParams.get("id");
+  const query = new URL(request.url);
+  const id = query.searchParams.get("id");
 
   if (!id)
     return Response.json({ message: "Invalid User Request." }, { status: 400 });
@@ -18,14 +18,14 @@ export async function GET(request: Request) {
   try {
     const { db_url, db_name } = getDatabaseConfig();
 
-    let profile = await new User(db_url, db_name).getProfile(id);
+    const profile = await new User(db_url, db_name).getProfile(id);
     if (!profile)
       return Response.json(
         { message: "User Profile Does Not Exist" },
         { status: 404 }
       );
 
-    let data = UserProfile.safeParse(profile);
+    const data = UserProfile.safeParse(profile);
     if (!data.success) {
       console.log(`User Error: ${data.error}`);
       return Response.json(
@@ -52,8 +52,8 @@ export async function GET(request: Request) {
 /** Create/Register a New User. */
 export async function POST(request: Request) {
   try {
-    let response = await request.json();
-    let registration = RegisterUser.safeParse(response);
+    const response = await request.json();
+    const registration = RegisterUser.safeParse(response);
     if (!registration.success) {
       console.log(`Invalid User Request: ${registration.error}`);
       return Response.json(
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
     const { db_url, db_name } = getDatabaseConfig();
 
-    let user = await new User(db_url, db_name).createUser(registration.data);
+    const user = await new User(db_url, db_name).createUser(registration.data);
     if (!user) {
       return Response.json(
         { message: "User Already Exists." },
@@ -76,7 +76,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let data = FetchUser.safeParse(user);
+    const data = FetchUser.safeParse(user);
     if (!data.success) {
       console.log(`Invalid User Respone: ${data.error}`);
       return Response.json(
@@ -110,8 +110,8 @@ export async function POST(request: Request) {
 /** Update User profiles. */
 export async function PATCH(request: Request) {
   try {
-    let response = await request.json();
-    let patchDetails = PatchDetails.safeParse(response);
+    const response = await request.json();
+    const patchDetails = PatchDetails.safeParse(response);
 
     if (!patchDetails.success) {
       console.log(`Invalid User Request: ${patchDetails.error}`);
@@ -125,7 +125,7 @@ export async function PATCH(request: Request) {
 
     const { db_url, db_name } = getDatabaseConfig();
 
-    let user = await new User(db_url, db_name).updateUser(
+    const user = await new User(db_url, db_name).updateUser(
       patchDetails.data.id,
       patchDetails.data
     );
@@ -139,7 +139,7 @@ export async function PATCH(request: Request) {
       );
     }
 
-    let data = FetchUser.safeParse(user);
+    const data = FetchUser.safeParse(user);
     if (!data.success) {
       console.log(`Invalid User Respone: ${data.error}`);
       return Response.json(
@@ -176,7 +176,7 @@ export async function DELETE(request: Request) {
     const { db_url, db_name } = getDatabaseConfig();
     const response = await request.json();
 
-    let deleteUser = FetchUser.safeParse(response);
+    const deleteUser = FetchUser.safeParse(response);
     if (!deleteUser.success) {
       console.log(`Invalid User Request: ${deleteUser.error}`);
       return Response.json(
@@ -195,7 +195,7 @@ export async function DELETE(request: Request) {
       );
     }
 
-    let data = FetchUser.safeParse(user);
+    const data = FetchUser.safeParse(user);
     if (!data.success) {
       console.log(`User Error: ${data.error}`);
       return Response.json(

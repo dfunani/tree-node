@@ -129,7 +129,7 @@ export default function Canvas() {
     }
   }
 
-  async function deleteEditor(user_id: String | null) {
+  async function deleteEditor(user_id: string | null) {
     try {
       let response = await fetch("/api/editor", {
         method: "DELETE",

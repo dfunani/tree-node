@@ -1,5 +1,4 @@
 import { ProfileStateType } from "@/src/public/types/user";
-import { Edges, Nodes, Profile } from "@/src/public/utils/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ProfileStateType = {
