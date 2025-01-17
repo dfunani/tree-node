@@ -1,12 +1,7 @@
-import { Edges, Nodes } from "@/src/public/utils/types";
+import { EditorStateType } from "@/src/public/types/editor";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type EditorState = {
-  nodes: Nodes[] | null;
-  edges: Edges[] | null;
-};
-
-const initialState: EditorState = {
+const initialState: EditorStateType = {
   nodes: null,
   edges: null,
 };
@@ -15,11 +10,14 @@ const editorState = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    UPDATE: (state: EditorState, action: PayloadAction<EditorState>) => {
+    UPDATE: (
+      state: EditorStateType,
+      action: PayloadAction<EditorStateType>
+    ) => {
       state = { ...state, ...action.payload };
       return state;
     },
-    CLEAR: (state: EditorState) => {
+    CLEAR: (state: EditorStateType) => {
       state = initialState;
       return state;
     },

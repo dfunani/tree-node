@@ -1,12 +1,7 @@
+import { UserStateType } from "@/src/public/types/user";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type UserState = {
-  email: string | null;
-  id: string | null;
-  isNewUser: boolean | null;
-};
-
-const initialState: UserState = {
+const initialState: UserStateType = {
   email: null,
   id: null,
   isNewUser: null,
@@ -16,11 +11,11 @@ const userState = createSlice({
   name: "user",
   initialState,
   reducers: {
-    UPDATE: (state: UserState, action: PayloadAction<UserState>) => {
+    UPDATE: (state: UserStateType, action: PayloadAction<UserStateType>) => {
       state = { ...state, ...action.payload };
       return state;
     },
-    CLEAR: (state: UserState) => {
+    CLEAR: (state: UserStateType) => {
       state = initialState;
       return state;
     },

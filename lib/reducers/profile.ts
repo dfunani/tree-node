@@ -1,16 +1,8 @@
+import { ProfileStateType } from "@/src/public/types/user";
 import { Edges, Nodes, Profile } from "@/src/public/utils/types";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type ProfileState = {
-  name: string | null;
-  surname: string | null;
-  dob: string | null;
-  city: string | null;
-  country: string | null;
-  image: string | null;
-};
-
-const initialState: ProfileState = {
+const initialState: ProfileStateType = {
   name: null,
   surname: null,
   dob: null,
@@ -23,11 +15,14 @@ const profileState = createSlice({
   name: "profile",
   initialState,
   reducers: {
-    UPDATE: (state: ProfileState, action: PayloadAction<ProfileState>) => {
+    UPDATE: (
+      state: ProfileStateType,
+      action: PayloadAction<ProfileStateType>
+    ) => {
       state = { ...state, ...action.payload };
       return state;
     },
-    CLEAR: (state: ProfileState) => {
+    CLEAR: (state: ProfileStateType) => {
       state = initialState;
       return state;
     },

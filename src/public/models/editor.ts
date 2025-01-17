@@ -1,11 +1,7 @@
 import Model from "@/src/public/models/model";
-import { Editor as Ed } from "@/src/public/models/data_classes/auth";
 import { EditorState } from "@/lib/reducers/editor";
 
-type EditorType = {
-  id: String;
-  user_id: string;
-} & EditorState;
+
 
 export default class Editor extends Model {
   constructor(db_uri: string, db_name: string) {
