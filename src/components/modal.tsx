@@ -1,25 +1,22 @@
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import styles from "@/src/components/modal.module.css";
-import { useGlobalContext } from "@/src/public/utils/context";
 import Registration from "@/src/components/registration";
-import { NodeData, Nodes, Registrations } from "../public/utils/types";
-import { useRouter } from "next/navigation";
-import { StaticImageData } from "next/image";
-import { UpdateNodeProfile } from "../public/types/auth";
-import { buildDate } from "../public/utils/factories";
+import { buildDate } from "@/src/public/utils/factories";
+import { NodeType } from "@/src/public/types/editor";
+import { ProfileType } from "../public/types/user";
 
 type Props = {
-  setClicked: any;
-  setModal: any;
-  updateNodes: (id: string, node: any) => void;
+  setClicked: Dispatch<SetStateAction<boolean>>;
+  setModal: Dispatch<SetStateAction<boolean>>;
+  updateNodes: (id: string, node: NodeType | {}) => void;
   id: string;
 };
 
 export default function Modal(props: Props) {
-  const [details, setDetails] = useState<UpdateNodeProfile>({});
+  const [details, setDetails] = useState<NodeType | {}>({});
 
   function handleUpdateRegistration(key: string, value: string) {
-    setDetails((prev: UpdateNodeProfile) => {
+    setDetails((prev: NodeType) => {
       return {
         ...(prev ?? {}),
         [key]: key === "dob" ? buildDate(new Date(value)) : value,
@@ -31,7 +28,6 @@ export default function Modal(props: Props) {
     props.updateNodes(props.id, details);
     props.setModal(false);
     props.setClicked(false);
-
   }
   return (
     <div

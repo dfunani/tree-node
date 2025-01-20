@@ -21,7 +21,7 @@ import MenuButton from "@/src/components/menu-button";
 import MenuDropdown from "@/src/components/menu-dropdown";
 import MenuItem from "@/src/components/menu-item";
 import { buildDate, generateImages } from "@/src/public/utils/factories";
-import { NodeType, PositionType } from "@/src/public/types/editor";
+import { EdgeType, NodeType, PositionType } from "@/src/public/types/editor";
 import { StateReducerType } from "../public/types/states";
 import { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
@@ -48,8 +48,8 @@ export default function Canvas() {
   const editorState = useSelector((state: StateReducerType) => state.editor);
   const profileState = useSelector((state: StateReducerType) => state.profile);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<NodeType>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeType>([]);
   const [show, setShow] = useState(false);
   const [showProfile, setshowProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +68,7 @@ export default function Canvas() {
   }
 
   const onConnect = useCallback(
-    (params: any) => {
+    (params: EdgeType) => {
       dispatch(
         editorUpdate({
           edges: addEdge(params, editorState.edges ?? []),
@@ -79,9 +79,12 @@ export default function Canvas() {
     [editorState]
   );
 
-  function addNode(position: PositionType, src: StaticImageData | string | null) {
-    let id = uuid4().toString();
-    let node: NodeType = {
+  function addNode(
+    position: PositionType,
+    src: StaticImageData | string | null
+  ) {
+    const id = uuid4().toString();
+    const node: NodeType = {
       id: id,
       position: position,
       type: "Canvas-Item",
@@ -105,7 +108,7 @@ export default function Canvas() {
 
   async function saveNodes() {
     try {
-      let response = await fetch("/api/editor", {
+      const response = await fetch("/api/editor", {
         method: "POST",
         body: JSON.stringify({
           user_id: userState.id,
@@ -126,7 +129,7 @@ export default function Canvas() {
 
   async function deleteEditor(user_id: string | null) {
     try {
-      let response = await fetch("/api/editor", {
+      const response = await fetch("/api/editor", {
         method: "DELETE",
         body: JSON.stringify({
           user_id: user_id,
@@ -146,8 +149,8 @@ export default function Canvas() {
   function getMenuItems() {
     const images = generateImages(theme);
 
-    let result = [];
-    for (let image in images) {
+    const result = [];
+    for (const image in images) {
       result.push(
         <MenuItem
           key={uuid4()}
@@ -161,8 +164,8 @@ export default function Canvas() {
   }
 
   async function setEditor(id: string) {
-    let response = await fetch(`/api/editor?id=${id}`, { method: "GET" });
-    let data = await response.json();
+    const response = await fetch(`/api/editor?id=${id}`, { method: "GET" });
+    const data = await response.json();
     if (response.ok) {
       dispatch(
         editorUpdate({
@@ -181,8 +184,8 @@ export default function Canvas() {
   }
 
   async function setProfile(id: string) {
-    let response = await fetch(`/api/auth/user?id=${id}`, { method: "GET" });
-    let profile = await response.json();
+    const response = await fetch(`/api/auth/user?id=${id}`, { method: "GET" });
+    const profile = await response.json();
     if (response.ok) {
       dispatch(profileUpdate(profile.message.data));
     } else {

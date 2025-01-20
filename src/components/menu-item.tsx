@@ -11,9 +11,9 @@ type Props = {
 };
 export default function MenuItem(props: Props) {
   async function handleUpdateImage(image: StaticImageData) {
-    let response = await fetch(image.src);
-    let blob = await response.blob();
-    let base64String = await handleImageConversion(blob);
+    const response = await fetch(image.src);
+    const blob = await response.blob();
+    const base64String = await handleImageConversion(blob);
     if (response) return `data:image:png;base64,${base64String}`;
     return null
   }

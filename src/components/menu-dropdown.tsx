@@ -1,7 +1,8 @@
+import { ReactNode } from "react"
 import styles from "@/src/components/dropdown.module.css"
 
 type Props = {
-    children: any
+    children: ReactNode
 }
 
 export default function MenuDropdown(props: Props) {

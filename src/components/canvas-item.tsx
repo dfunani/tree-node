@@ -59,7 +59,7 @@ export default function CanvasItem(props: Props) {
     setClicked(false);
   }
 
-  async function updateNodes(id: string, new_node: NodeType) {
+  async function updateNodes(id: string, new_node: NodeType | {}) {
     const nodes = editorState.nodes?.map((node: NodeType) => {
       if (node.id === id) {
         return {

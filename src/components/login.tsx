@@ -13,8 +13,8 @@ type Props = {
 };
 export default function Login(props: Props) {
   const router = useRouter();
-  let { access } = useParams();
-  let param = access?.toString() ?? "";
+  const { access } = useParams();
+  const param = access?.toString() ?? "";
 
   return (
     <div className={styles["form"]}>
