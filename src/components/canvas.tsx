@@ -11,6 +11,7 @@ import {
   addEdge,
   BackgroundVariant,
   Panel,
+  Connection,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -68,7 +69,7 @@ export default function Canvas() {
   }
 
   const onConnect = useCallback(
-    (params: EdgeType) => {
+    (params: Connection) => {
       dispatch(
         editorUpdate({
           edges: addEdge(params, editorState.edges ?? []),
@@ -76,7 +77,7 @@ export default function Canvas() {
         })
       );
     },
-    [editorState]
+    [setEdges]
   );
 
   function addNode(
@@ -169,8 +170,8 @@ export default function Canvas() {
     if (response.ok) {
       dispatch(
         editorUpdate({
-          nodes: data.message.nodes,
-          edges: data.message.edges,
+          nodes: data.message.data.nodes,
+          edges: data.message.data.edges,
         })
       );
     } else {
@@ -210,11 +211,17 @@ export default function Canvas() {
     if (isDark) setTheme("dark");
     else setTheme("light");
   }, []);
+
+  useEffect(() => {
+    setNodes(editorState.nodes ?? []);
+    setEdges(editorState.edges ?? []);
+
+}, [editorState.nodes, editorState.edges]);
   return (
     <div className={styles.canvas}>
       <ReactFlow
-        nodes={editorState.nodes ?? []}
-        edges={editorState.edges ?? []}
+        nodes={nodes}
+        edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
