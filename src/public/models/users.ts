@@ -56,6 +56,7 @@ export default class User extends Model {
 
   async createUser(registration: Registrations) {
     let collection = await this.getCollection();
+    console.log(collection)
 
     const client = new Security();
     registration.email = client.encrypt(registration.email);

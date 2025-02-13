@@ -8,6 +8,7 @@ export default class Security {
 
   constructor() {
     let key = process.env.CRYPTO_KEY ?? "";
+    console.log(key)
     this.key = Buffer.from(key, "hex");
     if (this.key.length !== 32) {
       throw new Error("Invalid key length: Must be 32 bytes for AES-256");

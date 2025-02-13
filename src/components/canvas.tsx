@@ -8,6 +8,8 @@ import {
   Background,
   useNodesState,
   useEdgesState,
+  applyNodeChanges,
+  applyEdgeChanges,
   addEdge,
   BackgroundVariant,
   Panel,
@@ -49,13 +51,35 @@ export default function Canvas() {
   const editorState = useSelector((state: StateReducerType) => state.editor);
   const profileState = useSelector((state: StateReducerType) => state.profile);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<NodeType>([]);
+  const [nodes, setNodes] = useNodesState<NodeType>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeType>([]);
   const [show, setShow] = useState(false);
   const [showProfile, setshowProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  const onConnect = useCallback(
+    (params: Connection) => {
+      const new_edge = addEdge(params, editorState.edges ?? []);
+      dispatch(
+        editorUpdate({
+          edges: new_edge,
+          nodes: editorState.nodes ?? [],
+        })
+      );
+    },
+    [dispatch, editorState.edges, editorState.nodes]
+  );
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => dispatch(
+      editorUpdate({
+        nodes: applyNodeChanges(changes, editorState.nodes ?? []),
+      })
+    ),
+    [dispatch, editorState.nodes],
+  );
 
   if (!session || !session.user) {
     return <Error statusCode={403} />;
@@ -67,18 +91,6 @@ export default function Canvas() {
   function toggleProfile() {
     setshowProfile((prev: boolean) => !prev);
   }
-
-  const onConnect = useCallback(
-    (params: Connection) => {
-      dispatch(
-        editorUpdate({
-          edges: addEdge(params, editorState.edges ?? []),
-          nodes: [...(editorState.nodes ?? [])],
-        })
-      );
-    },
-    [setEdges]
-  );
 
   function addNode(
     position: PositionType,
@@ -98,6 +110,7 @@ export default function Canvas() {
         image: src,
         label: `Canvas-Node-${id}`,
       },
+      draggable: true
     };
     dispatch(
       editorUpdate({
@@ -108,6 +121,7 @@ export default function Canvas() {
   }
 
   async function saveNodes() {
+    console.log(editorState.edges?.length);
     try {
       const response = await fetch("/api/editor", {
         method: "POST",
@@ -210,18 +224,13 @@ export default function Canvas() {
     const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     if (isDark) setTheme("dark");
     else setTheme("light");
-  }, []);
+  }, [dispatch, editorState, profileState, session.user, userState.id]);
 
-  useEffect(() => {
-    setNodes(editorState.nodes ?? []);
-    setEdges(editorState.edges ?? []);
-
-}, [editorState.nodes, editorState.edges]);
   return (
     <div className={styles.canvas}>
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
+        nodes={editorState.nodes ?? []}
+        edges={editorState.edges ?? []}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}

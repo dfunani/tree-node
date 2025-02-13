@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     }
 
     const { db_url, db_name } = getDatabaseConfig();
-
+    
     const user = await new User(db_url, db_name).getUser(credentials.data);
     if (!user)
       return Response.json({ message: "User Does Not Exist" }, { status: 404 });
