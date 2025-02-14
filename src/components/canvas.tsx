@@ -14,6 +14,9 @@ import {
   BackgroundVariant,
   Panel,
   Connection,
+  NodeChange,
+  OnNodesChange,
+  EdgeChange,
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
@@ -51,8 +54,6 @@ export default function Canvas() {
   const editorState = useSelector((state: StateReducerType) => state.editor);
   const profileState = useSelector((state: StateReducerType) => state.profile);
 
-  const [nodes, setNodes] = useNodesState<NodeType>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<EdgeType>([]);
   const [show, setShow] = useState(false);
   const [showProfile, setshowProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,13 +73,26 @@ export default function Canvas() {
     [dispatch, editorState.edges, editorState.nodes]
   );
 
-  const onNodesChange: OnNodesChange = useCallback(
-    (changes) => dispatch(
-      editorUpdate({
-        nodes: applyNodeChanges(changes, editorState.nodes ?? []),
-      })
-    ),
-    [dispatch, editorState.nodes],
+  const onNodesChange = useCallback(
+    (changes: NodeChange<NodeType>[]) =>
+      dispatch(
+        editorUpdate({
+          nodes: applyNodeChanges(changes, editorState.nodes ?? []),
+          edges: editorState.edges ?? [],
+        })
+      ),
+    [dispatch, editorState.nodes, editorState.edges]
+  );
+
+  const onEdgesChange = useCallback(
+    (changes: EdgeChange<EdgeType>[]) =>
+      dispatch(
+        editorUpdate({
+          edges: applyEdgeChanges(changes, editorState.edges ?? []),
+          nodes: editorState.nodes ?? [],
+        })
+      ),
+    [dispatch, editorState.nodes, editorState.edges]
   );
 
   if (!session || !session.user) {
@@ -110,7 +124,6 @@ export default function Canvas() {
         image: src,
         label: `Canvas-Node-${id}`,
       },
-      draggable: true
     };
     dispatch(
       editorUpdate({
