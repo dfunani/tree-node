@@ -6,17 +6,47 @@ import {
   FetchUser,
 } from "@/src/public/models/data_classes/auth";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
+import { getServerSession } from "next-auth/next";
+import { NextApiRequest, NextApiResponse } from "next";
+import { authOptions } from "../[...nextauth]/route";
+import { APIClient } from "@/src/public/models/api_client";
 
 /** Get User profile. */
-export async function GET(request: Request) {
-  const query = new URL(request.url);
+export async function GET(request: Request, response: Response) {
+  const query = new URL(request.url ?? "");
   const id = query.searchParams.get("id");
 
   if (!id)
     return Response.json({ message: "Invalid User Request." }, { status: 400 });
 
+  const apiKey = request.headers.get("x-api-key");
+  const token = request.headers.get("authorization");
+  const session = await getServerSession(
+    request as unknown as NextApiRequest,
+    {
+      ...response,
+      getHeader: (name: string) => response.headers?.get(name),
+      setHeader: (name: string, value: string) =>
+        response.headers?.set(name, value),
+    } as unknown as NextApiResponse,
+    authOptions
+  );
+
+  if (!apiKey && !session && !token) {
+    return Response.json({ message: "Invalid User Session." }, { status: 403 });
+  }
+
   try {
     const { db_url, db_name } = getDatabaseConfig();
+    if (apiKey) {
+      const apiClient = new APIClient(db_url, db_name);
+      const key = await apiClient.getToken(apiKey as string);
+      if (!key || !key.active)
+        return Response.json(
+          { message: "Invalid User Token." },
+          { status: 401 }
+        );
+    }
 
     const profile = await new User(db_url, db_name).getProfile(id);
     if (!profile)

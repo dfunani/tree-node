@@ -25,12 +25,11 @@ export class APIClient extends Model {
     });
   }
 
-  async getActiveToken(user_id: string) {
+  async getToken(token: string) {
     const collection = await this.getCollection();
 
     const response = await collection.findOne({
-      user_id: user_id,
-      active: true,
+      token: token,
     });
 
     if (!response) return null;

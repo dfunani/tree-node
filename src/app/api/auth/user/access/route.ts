@@ -2,10 +2,26 @@ import { LoginUser, Credentials } from "@/src/public/models/data_classes/auth";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../[...nextauth]/route";
 
 /** Retrieves Login Details. */
-export async function POST(request: Request) {
-  const apiKey = request.headers.get("x-api-key");
+export async function POST(request: Request, response: Response) {
+  // const apiKey = await request.headers["x-api-key"];
+  // const session = await getServerSession(
+  //   request,
+  //   {
+  //     ...response,
+  //     getHeader: (name: string) => response.headers?.get(name),
+  //     setHeader: (name: string, value: string) =>
+  //       response.headers?.set(name, value),
+  //   } as NextApiResponse,
+  //   authOptions
+  // );
+  // if (!session) {
+  //   return Response.json({ message: "Invalid User Session." }, { status: 401 });
+  // }
 
   // if(!apiKey || !(apiKey i) ) {
   try {
@@ -19,7 +35,7 @@ export async function POST(request: Request) {
     }
 
     const { db_url, db_name } = getDatabaseConfig();
-    
+
     const user = await new User(db_url, db_name).getUser(credentials.data);
     if (!user)
       return Response.json({ message: "User Does Not Exist" }, { status: 404 });
