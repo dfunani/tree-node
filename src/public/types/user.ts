@@ -38,3 +38,12 @@ export type ProfileStateType = {
   country: string | null;
   image: string | null;
 };
+
+export type JWTPayloadType = {
+  sub: string;
+  user_id: string;
+  email: string;
+  password: string;
+  iat: number;
+  exp: number;
+};

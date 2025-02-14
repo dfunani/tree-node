@@ -1,45 +1,29 @@
-import { APIClient } from "@/src/public/models/api_client";
 import { TokenGenration } from "@/src/public/models/data_classes/auth";
-import User from "@/src/public/models/users";
-import { getDatabaseConfig } from "@/src/public/utils/factories";
-
-export async function GET(request: Request) {
-  return new Response("Not Implemented", { status: 501 });
-}
+import jwt from "jsonwebtoken";
 
 export async function POST(request: Request) {
   const response = await request.json();
   const credentials = TokenGenration.safeParse(response);
   if (!credentials.success) {
-    return Response.json(
-      { error: "Invalid Credentials.", text: credentials.error },
-      { status: 400 }
-    );
+    return Response.json({ message: "Invalid User Request." }, { status: 400 });
   }
 
-  const { db_url, db_name } = getDatabaseConfig();
+  const now = new Date();
+  const expires = 30 * 60;
+  const exp = now.getTime() + expires * 1000;
+  const expiresAt = new Date(exp);
 
-  const user = new User(db_url, db_name);
-  const login = user.getUser(credentials.data);
-  if (!login) {
-    return Response.json({ error: "User Not Found." }, { status: 404 });
-  }
-
-  const profile = user.getProfile(credentials.data.user_id);
-  if (!profile) {
-    return Response.json({ error: "User Profile Not Found." }, { status: 404 });
-  }
-
-  const token = await new APIClient(db_url, db_name).createToken(
-    credentials.data.user_id,
-    credentials.data.expires
+  const payload = {
+    sub: process.env.DB_NAME,
+    user_id: credentials.data.user_id,
+    email: credentials.data.email,
+    password: credentials.data.password,
+    iat: now.getTime(),
+    exp: exp,
+  };
+  const token = jwt.sign(payload, process.env.JWT_SECRET);
+  return Response.json(
+    { message: { token, expires, expiresAt }, timestamp: now },
+    { status: 200 }
   );
-  if (!token) {
-    return Response.json(
-      { error: "Token Generation Failed." },
-      { status: 500 }
-    );
-  }
-
-  return Response.json({ message: token }, { status: 201 });
 }

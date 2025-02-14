@@ -61,3 +61,12 @@ export const PatchDetails = z.object({
   country: z.string().min(1, "Invalid Country").max(255),
   image: z.string().regex(imageRegex).nullable(),
 });
+
+export const JWTPayload = z.object({
+  sub: z.string(),
+  user_id: z.string().regex(objectIDRegex),
+  email: z.string().email().regex(emailRegex, "Invalid Email."),
+  password: z.string().regex(passwordRegex, "Invalid Password."),
+  iat: z.number(),
+  exp: z.number(),
+});

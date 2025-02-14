@@ -1,5 +1,9 @@
 import Model from "@/src/public/models/model";
 import Security from "@/src/public/utils/cryptography";
+import { JWTPayload } from "./data_classes/auth";
+import User from "./users";
+import { AuthenticationError } from "../errors/auth";
+import jwt from "jsonwebtoken";
 
 export class APIClient extends Model {
   constructor(db_uri: string, db_name: string) {
@@ -45,13 +49,13 @@ export class APIClient extends Model {
     };
   }
 
-  async createToken(user_id: string, expires: number = 3600) {
+  async createAPIKey(user_id: string, expires: number = 3600) {
     const collection = await this.getCollection();
     const now = new Date();
     const expiresAt = now.getDate() + expires;
     const security = new Security();
     const active = true;
-    const token = security.hash(
+    const apiKey = security.hash(
       JSON.stringify({
         user_id: user_id,
         insertedAt: now,
@@ -61,7 +65,7 @@ export class APIClient extends Model {
 
     const response = await collection.insertOne({
       user_id: user_id,
-      token: token,
+      apiKey: apiKey,
       expiresAt: expiresAt,
       active: active,
       createdAt: now,
@@ -72,7 +76,7 @@ export class APIClient extends Model {
 
     return {
       user_id: user_id,
-      token: token,
+      apiKey: apiKey,
       expiresAt: expiresAt,
       active: active,
       createdAt: now,
@@ -90,5 +94,50 @@ export class APIClient extends Model {
     if (!response) return null;
 
     return response;
+  }
+
+  async validateAPIKey(key: string) {
+    const collection = await this.getCollection();
+
+    const response = await collection.findOne({
+      apiKey: key,
+    });
+
+    if (!response)
+      throw new AuthenticationError("Invalid User API response. API key Doesn't Exist.");
+
+    if (!response.active)
+      throw new AuthenticationError("Invalid User API Key. API key Inactive.");
+  }
+
+  async validateJWT(token: string) {
+    const bearer = token?.split(" ")[1];
+    const verify = jwt.verify(bearer, process.env.JWT_SECRET);
+    const now = new Date().getTime();
+    const user = new User(this.db_uri, "users");
+
+    if (
+      !verify ||
+      verify.exp < now ||
+      verify.iat > now ||
+      verify.sub !== process.env.DB_NAME
+    )
+      throw new AuthenticationError("Invalid User Token. Token Expired.");
+
+    const validToken = JWTPayload.safeParse(verify);
+    if (!validToken.success) {
+      throw new AuthenticationError("Invalid User Token. Invalid Payload.");
+    }
+
+    const resultUser = user.getUser({
+      email: validToken.data.email,
+      password: validToken.data.password,
+    });
+    if (!resultUser)
+      throw new AuthenticationError("Invalid User Token. Invalid User.");
+    
+    const resultProfile = user.getProfile(validToken.data.user_id);
+    if (!resultProfile)
+      throw new AuthenticationError("Invalid User Token. Invalid Profile.");
   }
 }

@@ -4,12 +4,23 @@ import {
   PatchDetails,
   RegisterUser,
   FetchUser,
+  JWTPayload,
 } from "@/src/public/models/data_classes/auth";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
 import { getServerSession } from "next-auth/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { authOptions } from "../[...nextauth]/route";
 import { APIClient } from "@/src/public/models/api_client";
+import { AuthenticationError } from "@/src/public/errors/auth";
+
+function generateServerSession(response: Response) {
+  return {
+    ...response,
+    getHeader: (name: string) => response.headers?.get(name),
+    setHeader: (name: string, value: string) =>
+      response.headers?.set(name, value),
+  } as unknown as NextApiResponse;
+}
 
 /** Get User profile. */
 export async function GET(request: Request, response: Response) {
@@ -23,29 +34,30 @@ export async function GET(request: Request, response: Response) {
   const token = request.headers.get("authorization");
   const session = await getServerSession(
     request as unknown as NextApiRequest,
-    {
-      ...response,
-      getHeader: (name: string) => response.headers?.get(name),
-      setHeader: (name: string, value: string) =>
-        response.headers?.set(name, value),
-    } as unknown as NextApiResponse,
+    generateServerSession(response),
     authOptions
   );
 
   if (!apiKey && !session && !token) {
-    return Response.json({ message: "Invalid User Session." }, { status: 403 });
+    return Response.json(
+      { message: "Unauthorized User Session." },
+      { status: 403 }
+    );
   }
 
   try {
     const { db_url, db_name } = getDatabaseConfig();
-    if (apiKey) {
+
+    if (!session) {
       const apiClient = new APIClient(db_url, db_name);
-      const key = await apiClient.getToken(apiKey as string);
-      if (!key || !key.active)
-        return Response.json(
-          { message: "Invalid User Token." },
-          { status: 401 }
-        );
+
+      if (!session && apiKey) {
+        await apiClient.validateAPIKey(apiKey as string);
+      }
+
+      if (!session && token) {
+        await apiClient.validateJWT(token);
+      }
     }
 
     const profile = await new User(db_url, db_name).getProfile(id);
@@ -70,6 +82,12 @@ export async function GET(request: Request, response: Response) {
     );
   } catch (error) {
     console.log(`User Error: ${error}`);
+    if (error instanceof AuthenticationError) {
+      return Response.json(
+        { message: "Unauthorized User Operations." },
+        { status: 403 }
+      );
+    }
     return Response.json(
       { message: `Invalid User Operation.` },
       {

@@ -37,7 +37,7 @@ export default class User extends Model {
 
   async getProfile(id: string): Promise<Profile | null> {
     const collection = await this.getCollection();
-
+    
     let response = await collection.findOne({
       _id: ObjectId.createFromHexString(id),
     });
@@ -56,8 +56,7 @@ export default class User extends Model {
 
   async createUser(registration: Registrations) {
     let collection = await this.getCollection();
-    console.log(collection)
-
+    
     const client = new Security();
     registration.email = client.encrypt(registration.email);
     registration.password = client.hash(registration.password);
