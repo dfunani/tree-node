@@ -11,45 +11,6 @@ export class APIClient extends Model {
     super(db_uri, db_name, "tokens");
   }
 
-  async getAllTokens(user_id: string) {
-    const collection = await this.getCollection();
-    const response = await collection.find({ user_id: user_id }).toArray();
-
-    if (!response) return null;
-
-    return response.map((token) => {
-      return {
-        id: token._id.toString(),
-        user_id: token.user_id,
-        token: token.token,
-        expiresAt: token.expires,
-        active: token.active,
-        createdAt: token.createdAt,
-        updatedAt: token.updatedAt,
-      };
-    });
-  }
-
-  async getToken(token: string) {
-    const collection = await this.getCollection();
-
-    const response = await collection.findOne({
-      token: token,
-    });
-
-    if (!response) return null;
-
-    return {
-      id: response._id.toString(),
-      user_id: response.user_id,
-      token: response.token,
-      expiresAt: response.expires,
-      active: response.active,
-      createdAt: response.createdAt,
-      updatedAt: response.updatedAt,
-    };
-  }
-
   async createAPIKey(user_id: string, expires: number = 3600) {
     const collection = await this.getCollection();
     const now = new Date();
@@ -64,25 +25,18 @@ export class APIClient extends Model {
       })
     );
 
-    const response = await collection.insertOne({
+    const payload = {
       user_id: user_id,
       apiKey: apiKey,
-      expiresAt: expiresAt,
       active: active,
       createdAt: now,
-      updatedAt: now,
-    });
+      expiresAt: expiresAt,
+    }
+    const response = await collection.insertOne({...payload});
 
     if (!response) return null;
 
-    return {
-      user_id: user_id,
-      apiKey: apiKey,
-      expiresAt: expiresAt,
-      active: active,
-      createdAt: now,
-      updatedAt: now,
-    };
+    return payload;
   }
 
   async createJWT(
@@ -105,18 +59,6 @@ export class APIClient extends Model {
     if (!token) return null;
 
     return { token, expires, expiresAt, createdAt: now };
-  }
-
-  async deleteToken(user_id: string) {
-    const collection = await this.getCollection();
-    const response = await collection.updateOne(
-      { user_id: user_id },
-      { $set: { active: false } }
-    );
-
-    if (!response) return null;
-
-    return response;
   }
 
   async validateAPIKey(key: string) {

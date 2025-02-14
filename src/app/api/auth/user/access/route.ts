@@ -2,31 +2,16 @@ import { LoginUser, Credentials } from "@/src/public/models/data_classes/auth";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
 import { getDatabaseConfig } from "@/src/public/utils/factories";
-import { NextApiRequest, NextApiResponse } from "next";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../[...nextauth]/route";
+import { validateAuthMethod } from "@/src/public/utils/validators";
+import { AuthenticationError } from "@/src/public/errors/auth";
 
 /** Retrieves Login Details. */
 export async function POST(request: Request, response: Response) {
-  // const apiKey = await request.headers["x-api-key"];
-  // const session = await getServerSession(
-  //   request,
-  //   {
-  //     ...response,
-  //     getHeader: (name: string) => response.headers?.get(name),
-  //     setHeader: (name: string, value: string) =>
-  //       response.headers?.set(name, value),
-  //   } as NextApiResponse,
-  //   authOptions
-  // );
-  // if (!session) {
-  //   return Response.json({ message: "Invalid User Session." }, { status: 401 });
-  // }
-
-  // if(!apiKey || !(apiKey i) ) {
   try {
-    const response = await request.json();
-    const credentials = Credentials.safeParse(response);
+    await validateAuthMethod(request, response);
+    const res = await request.json();
+    
+    const credentials = Credentials.safeParse(res);
     if (!credentials.success) {
       return Response.json(
         { message: "Invalid User Request." },
@@ -59,6 +44,12 @@ export async function POST(request: Request, response: Response) {
     );
   } catch (error) {
     console.log(`User Error: ${error}`);
+    if (error instanceof AuthenticationError) {
+          return Response.json(
+            { message: "Unauthorized User Operations." },
+            { status: 403 }
+          );
+        }
     return Response.json(
       { message: `Invalid User Operation.` },
       {
