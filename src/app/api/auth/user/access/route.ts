@@ -5,6 +5,9 @@ import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 /** Retrieves Login Details. */
 export async function POST(request: Request) {
+  const apiKey = request.headers.get("x-api-key");
+
+  // if(!apiKey || !(apiKey i) ) {
   try {
     const response = await request.json();
     const credentials = Credentials.safeParse(response);

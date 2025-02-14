@@ -21,6 +21,13 @@ export const Credentials = z.object({
   password: z.string().regex(passwordRegex, "Invalid Password."),
 });
 
+export const TokenGenration = z.object({
+  user_id: z.string().regex(objectIDRegex),
+  email: z.string().email().regex(emailRegex, "Invalid Email."),
+  password: z.string().regex(passwordRegex, "Invalid Password."),
+  expires: z.number().optional().default(3600),
+});
+
 export const UserProfile = z.object({
   name: z.string().min(1, "Invalid Name.").max(255),
   surname: z.string().min(1, "Invalid Surname.").max(255),

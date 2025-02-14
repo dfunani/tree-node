@@ -34,7 +34,6 @@ const authOptions = {
   ],
   callbacks: {
     async jwt({ token, user }: TokenProps) {
-      console.log(user);
       if (token.email) {
         const client = new Security();
         token.accessToken = client.hash(token.email);
