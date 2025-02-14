@@ -1,5 +1,6 @@
+import { APIClient } from "@/src/public/models/api_client";
 import { TokenGenration } from "@/src/public/models/data_classes/auth";
-import jwt from "jsonwebtoken";
+import { getDatabaseConfig } from "@/src/public/utils/factories";
 
 export async function POST(request: Request) {
   const response = await request.json();
@@ -8,22 +9,18 @@ export async function POST(request: Request) {
     return Response.json({ message: "Invalid User Request." }, { status: 400 });
   }
 
-  const now = new Date();
-  const expires = 30 * 60;
-  const exp = now.getTime() + expires * 1000;
-  const expiresAt = new Date(exp);
+  const { db_url, db_name } = getDatabaseConfig();
+  const apiClient = new APIClient(db_url, db_name);
 
-  const payload = {
-    sub: process.env.DB_NAME,
-    user_id: credentials.data.user_id,
-    email: credentials.data.email,
-    password: credentials.data.password,
-    iat: now.getTime(),
-    exp: exp,
-  };
-  const token = jwt.sign(payload, process.env.JWT_SECRET);
+  const token = await apiClient.createJWT(credentials.data);
+  if (!token) {
+    return Response.json(
+      { message: "Token Generation Failed." },
+      { status: 500 }
+    );
+  }
   return Response.json(
-    { message: { token, expires, expiresAt }, timestamp: now },
+    { message: token, timestamp: new Date().toISOString() },
     { status: 200 }
   );
 }

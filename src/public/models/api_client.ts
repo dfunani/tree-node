@@ -4,6 +4,7 @@ import { JWTPayload } from "./data_classes/auth";
 import User from "./users";
 import { AuthenticationError } from "../errors/auth";
 import jwt from "jsonwebtoken";
+import { JWTPayloadType } from "../types/user";
 
 export class APIClient extends Model {
   constructor(db_uri: string, db_name: string) {
@@ -84,6 +85,28 @@ export class APIClient extends Model {
     };
   }
 
+  async createJWT(
+    credentials: Pick<JWTPayloadType, "user_id" | "email" | "password">
+  ) {
+    const now = new Date();
+    const expires = 30 * 60;
+    const exp = now.getTime() + expires * 1000;
+    const expiresAt = new Date(exp);
+
+    const payload = {
+      sub: process.env.DB_NAME,
+      user_id: credentials.user_id,
+      email: credentials.email,
+      password: credentials.password,
+      iat: now.getTime(),
+      exp: exp,
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET);
+    if (!token) return null;
+
+    return { token, expires, expiresAt, createdAt: now };
+  }
+
   async deleteToken(user_id: string) {
     const collection = await this.getCollection();
     const response = await collection.updateOne(
@@ -104,7 +127,9 @@ export class APIClient extends Model {
     });
 
     if (!response)
-      throw new AuthenticationError("Invalid User API response. API key Doesn't Exist.");
+      throw new AuthenticationError(
+        "Invalid User API response. API key Doesn't Exist."
+      );
 
     if (!response.active)
       throw new AuthenticationError("Invalid User API Key. API key Inactive.");
@@ -135,7 +160,7 @@ export class APIClient extends Model {
     });
     if (!resultUser)
       throw new AuthenticationError("Invalid User Token. Invalid User.");
-    
+
     const resultProfile = user.getProfile(validToken.data.user_id);
     if (!resultProfile)
       throw new AuthenticationError("Invalid User Token. Invalid Profile.");
