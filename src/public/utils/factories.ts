@@ -1,4 +1,3 @@
-import { StaticImageData } from "next/image";
 import female_dark_1 from "@/src/public/images/menu-items/female-dark-1.png";
 import female_dark_2 from "@/src/public/images/menu-items/female-dark-2.png";
 import female_light_1 from "@/src/public/images/menu-items/female-light-1.png";
@@ -8,15 +7,11 @@ import male_dark_2 from "@/src/public/images/menu-items/male-dark-2.png";
 import male_light_1 from "@/src/public/images/menu-items/male-light-1.png";
 import male_light_2 from "@/src/public/images/menu-items/male-light-2.png";
 import { ConfigurationError } from "@/src/public/errors/config";
-
-type ImageFactoryResponse = {
-  [key: string]: StaticImageData;
-};
-
-type ThemeOptions = "light" | "dark";
+import { ImageFactoryResponse, ThemeOptions } from "../types/images";
+import { StatusCodes } from "../types/responses";
 
 export function generateImages(theme: ThemeOptions): ImageFactoryResponse {
-  let response = {
+  const response = {
     light: {
       "female-light-1": female_light_1,
       "female-light-2": female_light_2,
@@ -69,4 +64,16 @@ export function getDatabaseConfig() {
     db_url,
     db_name,
   };
+}
+
+export function generateServerResponses<T>(data: T, statusCode: StatusCodes) {
+  try {
+    const timestamp = new Date().toISOString();
+    return Response.json({ message: data, timestamp }, { status: statusCode });
+  } catch {
+    return Response.json(
+      { message: "Internal Server Error. Please Try Again Later." },
+      { status: 500 }
+    );
+  }
 }

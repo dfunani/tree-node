@@ -1,60 +1,47 @@
 import { LoginUser, Credentials } from "@/src/public/models/data_classes/auth";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
-import { getDatabaseConfig } from "@/src/public/utils/factories";
-import { validateAuthMethod } from "@/src/public/utils/validators";
-import { AuthenticationError } from "@/src/public/errors/auth";
+import { getDatabaseConfig, generateServerResponses } from "@/src/public/utils/factories";
+import { NextApiRequest, NextApiResponse } from "next";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../[...nextauth]/route";
 
 /** Retrieves Login Details. */
-export async function POST(request: Request, response: Response) {
+export async function POST(request: NextApiRequest, response: NextApiResponse) {
+  const apiKey = request.headers.get("x-api-key");
+  const session = await getServerSession(request, response, authOptions);
+  console.log(session)
+  if (!session) {
+    return generateServerResponses(response, "Invalid User Session.", 401);
+  }
+
+  // if(!apiKey || !(apiKey i) ) {
   try {
-    await validateAuthMethod(request, response);
-    const res = await request.json();
-    
-    const credentials = Credentials.safeParse(res);
+    const response = await request.json();
+    const credentials = Credentials.safeParse(response);
     if (!credentials.success) {
-      return Response.json(
-        { message: "Invalid User Request." },
-        { status: 400 }
-      );
+      return generateServerResponses(response, "Invalid User Request.", 400);
     }
 
     const { db_url, db_name } = getDatabaseConfig();
-
+    
     const user = await new User(db_url, db_name).getUser(credentials.data);
     if (!user)
-      return Response.json({ message: "User Does Not Exist" }, { status: 404 });
+      return generateServerResponses(response, "User Does Not Exist", 404);
 
     const data = LoginUser.safeParse(user);
     if (!data.success) {
       console.log(`Invalid User Response: ${data.error}`);
-      return Response.json(
-        { message: "Invalid User Respone." },
-        { status: 500 }
-      );
+      return generateServerResponses(response, "Invalid User Response.", 500);
     }
 
     const client = new Security();
     data.data.email = client.decrypt(data.data.email);
     data.data.password = "**********";
 
-    return Response.json(
-      { message: { ...data }, Timestamp: new Date().toISOString() },
-      { status: 200 }
-    );
+    return generateServerResponses(response, { ...data }, 200);
   } catch (error) {
     console.log(`User Error: ${error}`);
-    if (error instanceof AuthenticationError) {
-          return Response.json(
-            { message: "Unauthorized User Operations." },
-            { status: 403 }
-          );
-        }
-    return Response.json(
-      { message: `Invalid User Operation.` },
-      {
-        status: 500,
-      }
-    );
+    return generateServerResponses(response, "Invalid User Operation.", 500);
   }
 }
