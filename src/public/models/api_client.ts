@@ -79,6 +79,9 @@ export class APIClient extends Model {
 
     if (!response.active)
       throw new AuthenticationError("Invalid User API Key. API key Inactive.");
+
+    if (!response.expiresAt || response.expiresAt < new Date())
+      throw new AuthenticationError("Invalid User API Key. API key Expired.");
   }
 
   async validateJWT(token: string) {

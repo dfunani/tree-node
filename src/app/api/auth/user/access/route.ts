@@ -42,6 +42,6 @@ export async function POST(request: Request, response: Response) {
     if (error instanceof AuthenticationError)
       return generateServerResponses("Unauthorized User Operation.", 403);
 
-    return generateServerResponses("Invalid User Operation.", 500);
+    return generateServerResponses("Internal Server Error.", 500);
   }
 }

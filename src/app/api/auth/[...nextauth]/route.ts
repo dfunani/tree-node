@@ -22,10 +22,12 @@ const authOptions = {
 
         const { db_url, db_name } = getDatabaseConfig();
 
-        const user = await new User(db_url, db_name).getUser(credentials);
-        if (!user) return null;
+        const user = await new User(db_url, db_name)
+        
+        const newUser = user.getUser(credentials);
+        if (!newUser) return null;
 
-        const data = LoginUser.safeParse(user);
+        const data = LoginUser.safeParse(newUser);
         if (!data.success) return null;
 
         return data.data;

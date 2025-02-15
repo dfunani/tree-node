@@ -22,8 +22,9 @@ export async function GET(request: Request, response: Response) {
   try {
     await validateAuthMethod(request, response);
     const { db_url, db_name } = getDatabaseConfig();
+    const user = new User(db_url, db_name);
 
-    const profile = await new User(db_url, db_name).getProfile(id);
+    const profile = await user.getProfile(id);
     if (!profile)
       return generateServerResponses("User Profile Does Not Exist", 404);
 
@@ -33,21 +34,24 @@ export async function GET(request: Request, response: Response) {
       return generateServerResponses("Invalid User Response.", 500);
     }
 
-    return generateServerResponses({ ...data }, 200);
+    return generateServerResponses(data.data, 200);
   } catch (error) {
     console.log(`User Error: ${error}`);
+
     if (error instanceof AuthenticationError) {
       return generateServerResponses("Unauthorized User Operations.", 403);
     }
-    return generateServerResponses("Invalid User Operation.", 500);
+    return generateServerResponses("Internal Server Error", 500);
   }
 }
 
 /** Create/Register a New User. */
-export async function POST(request: Request) {
+export async function POST(request: Request, response: Response) {
   try {
-    const response = await request.json();
-    const registration = RegisterUser.safeParse(response);
+    await validateAuthMethod(request, response);
+    const res = await request.json();
+
+    const registration = RegisterUser.safeParse(res);
     if (!registration.success) {
       console.log(`Invalid User Request: ${registration.error}`);
       return generateServerResponses("Invalid User Request.", 400);
@@ -55,85 +59,105 @@ export async function POST(request: Request) {
 
     const { db_url, db_name } = getDatabaseConfig();
 
-    const user = await new User(db_url, db_name).createUser(registration.data);
-    if (!user) {
+    const user = new User(db_url, db_name);
+    const registeredUser = await user.createUser(registration.data);
+    if (!registeredUser) {
       return generateServerResponses("User Already Exists.", 409);
     }
 
-    const data = FetchUser.safeParse(user);
+    const data = FetchUser.safeParse(registeredUser);
     if (!data.success) {
       console.log(`Invalid User Response: ${data.error}`);
       return generateServerResponses("Invalid User Response.", 500);
     }
 
-    return generateServerResponses({ ...data }, 201);
+    return generateServerResponses(data.data, 201);
   } catch (error) {
     console.log(`User Error: ${error}`);
-    return generateServerResponses("Invalid User Registration.", 500);
+
+    if (error instanceof AuthenticationError) {
+      return generateServerResponses("Unauthorized User Operations.", 403);
+    }
+
+    return generateServerResponses("Internal Server Error.", 500);
   }
 }
 
 /** Update User profiles. */
-export async function PATCH(request: Request) {
+export async function PATCH(request: Request, response: Response) {
   try {
-    const response = await request.json();
-    const patchDetails = PatchDetails.safeParse(response);
+    await validateAuthMethod(request, response);
+    const res = await request.json();
 
+    const patchDetails = PatchDetails.safeParse(res);
     if (!patchDetails.success) {
       console.log(`Invalid User Request: ${patchDetails.error}`);
       return generateServerResponses("Invalid User Update Request.", 400);
     }
 
     const { db_url, db_name } = getDatabaseConfig();
+    const user = await new User(db_url, db_name);
 
-    const user = await new User(db_url, db_name).updateUser(
+    const updatedUser = await user.updateUser(
       patchDetails.data.id,
       patchDetails.data
     );
 
-    if (!user) {
+    if (!updatedUser) {
       return generateServerResponses("Invalid User Request.", 500);
     }
 
-    const data = FetchUser.safeParse(user);
+    const data = FetchUser.safeParse(updatedUser);
     if (!data.success) {
       console.log(`Invalid User Response: ${data.error}`);
       return generateServerResponses("Invalid User Response.", 500);
     }
 
-    return generateServerResponses({ ...data }, 200);
+    return generateServerResponses(data.data, 200);
   } catch (error) {
     console.log(`User Error: ${error}`);
-    return generateServerResponses("Invalid User Operation.", 500);
+
+    if (error instanceof AuthenticationError) {
+      return generateServerResponses("Unauthorized User Operations.", 403);
+    }
+
+    return generateServerResponses("Internal Server Error.", 500);
   }
 }
 
 /** Delete Existing User. */
-export async function DELETE(request: Request) {
+export async function DELETE(request: Request, response: Response) {
   try {
-    const { db_url, db_name } = getDatabaseConfig();
-    const response = await request.json();
+    await validateAuthMethod(request, response);
+    const res = await request.json();
 
-    const deleteUser = FetchUser.safeParse(response);
+    const deleteUser = FetchUser.safeParse(res);
     if (!deleteUser.success) {
       console.log(`Invalid User Request: ${deleteUser.error}`);
       return generateServerResponses("Invalid User Request.", 500);
     }
+    const { db_url, db_name } = getDatabaseConfig();
+    const user = new User(db_url, db_name);
 
-    const user = await new User(db_url, db_name).delete(deleteUser.data.id);
-    if (!user) {
+    const deletedUser = await user.delete(deleteUser.data.id);
+    if (!deletedUser) {
       return generateServerResponses("Invalid User Request.", 500);
     }
 
-    const data = FetchUser.safeParse(user);
+    const data = FetchUser.safeParse(deletedUser);
     if (!data.success) {
       console.log(`User Error: ${data.error}`);
       return generateServerResponses("Invalid User Response.", 500);
     }
 
-    return generateServerResponses({ ...data }, 200);
+    return generateServerResponses(data.data, 200);
   } catch (error) {
     console.log(`User Error: ${error}`);
-    return generateServerResponses("Invalid User Operation.", 500);
+
+    if (error instanceof AuthenticationError) {
+      return generateServerResponses("Unauthorized User Operations.", 403);
+    }
+
+    return generateServerResponses("Internal Server Error.", 500);
   }
 }

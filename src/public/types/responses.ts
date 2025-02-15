@@ -1,1 +1,1 @@
-export type StatusCodes = 200 | 201 | 204 | 400 | 401 | 403 | 404 | 500;
+export type StatusCodes = 200 | 201 | 204 | 400 | 401 | 403 | 404 | 409 | 500;
