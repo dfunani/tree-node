@@ -14,10 +14,10 @@ export class APIClient extends Model {
     this.secret = process.env.JWT_SECRET ?? "secret";
   }
 
-  async createAPIKey(user_id: string, expires: number = 3600) {
+  async createAPIKey(user_id: string, expires: number = 30) {
     const collection = await this.getCollection();
     const now = new Date();
-    const expiresAt = now.getDate() + expires;
+    const expiresAt = new Date(now.getTime() + expires * 60 * 1000);
     const security = new Security();
     const active = true;
     const apiKey = security.hash(
