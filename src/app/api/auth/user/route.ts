@@ -5,18 +5,19 @@ import {
   RegisterUser,
   FetchUser,
 } from "@/src/public/models/data_classes/auth";
-import { getDatabaseConfig, generateServerResponses } from "@/src/public/utils/factories";
+import {
+  getDatabaseConfig,
+  generateServerResponses,
+  getIdFromRequest,
+} from "@/src/public/utils/factories";
 
 import { AuthenticationError } from "@/src/public/errors/auth";
 import { validateAuthMethod } from "@/src/public/utils/validators";
 
 /** Get User profile. */
 export async function GET(request: Request, response: Response) {
-  const query = new URL(request.url ?? "");
-  const id = query.searchParams.get("id");
-
-  if (!id)
-    return generateServerResponses("Invalid User Request.", 400);
+  const id = getIdFromRequest(request);
+  if (!id) return generateServerResponses("Invalid User Request.", 400);
 
   try {
     await validateAuthMethod(request, response);

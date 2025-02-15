@@ -2,11 +2,10 @@ import { getServerSession } from "next-auth/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { APIClient } from "@/src/public/models/api_client";
 import { authOptions } from "@/src/app/api/auth/[...nextauth]/route";
-import { getDatabaseConfig } from "./factories";
-import { AuthenticationError } from "../errors/auth";
+import { getDatabaseConfig } from "@/src/public/utils/factories";
+import { AuthenticationError } from "@/src/public/errors/auth";
 
 export function validateEmail(email: string): boolean {
-  // let reg = new RegExp(``, "i")
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }

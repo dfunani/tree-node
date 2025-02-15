@@ -12,10 +12,9 @@ export default class Model {
   }
 
   async getCollection() {
-      let db = await connection(this.db_uri, this.db_name);
-      let collection = db.collection(this.collection);
-  
-      return collection;
-    }
-  
+    const db = await connection(this.db_uri, this.db_name);
+    const collection = db.collection(this.collection);
+
+    return collection;
+  }
 }

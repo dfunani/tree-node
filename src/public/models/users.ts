@@ -1,10 +1,10 @@
 import Security from "@/src/public/utils/cryptography";
 import {
-  Logins,
-  Profile,
-  Registrations,
-  Users,
-} from "@/src/public/utils/types";
+  CredentialsType,
+  ProfileType,
+  RegistrationType,
+  UserType,
+} from "@/src/public/types/user";
 import { ObjectId } from "mongodb";
 import Model from "@/src/public/models/model";
 
@@ -13,14 +13,14 @@ export default class User extends Model {
     super(db_uri, db_name, "users");
   }
 
-  async getUser(credentials: Logins): Promise<Users | null> {
+  async getUser(credentials: CredentialsType): Promise<UserType | null> {
     const collection = await this.getCollection();
 
     const client = new Security();
     credentials.email = client.encrypt(credentials.email);
     credentials.password = client.hash(credentials.password);
 
-    let response = await collection.findOne({
+    const response = await collection.findOne({
       email: credentials.email,
       password: credentials.password,
     });
@@ -35,10 +35,10 @@ export default class User extends Model {
     };
   }
 
-  async getProfile(id: string): Promise<Profile | null> {
+  async getProfile(id: string): Promise<ProfileType | null> {
     const collection = await this.getCollection();
-    
-    let response = await collection.findOne({
+
+    const response = await collection.findOne({
       _id: ObjectId.createFromHexString(id),
     });
 
@@ -54,20 +54,22 @@ export default class User extends Model {
     };
   }
 
-  async createUser(registration: Registrations) {
-    let collection = await this.getCollection();
-    
+  async createUser(registration: RegistrationType) {
+    const collection = await this.getCollection();
+
     const client = new Security();
     registration.email = client.encrypt(registration.email);
     registration.password = client.hash(registration.password);
 
-    let existing_user = await collection.findOne({ email: registration.email });
+    const existing_user = await collection.findOne({
+      email: registration.email,
+    });
     if (existing_user) {
       return null;
     }
 
-    let now = new Date();
-    let document = await collection.insertOne({
+    const now = new Date();
+    const document = await collection.insertOne({
       ...registration,
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
@@ -77,15 +79,15 @@ export default class User extends Model {
     };
   }
 
-  async updateUser(id: string, profile: Profile) {
-    let collection = await this.getCollection();
+  async updateUser(id: string, profile: ProfileType) {
+    const collection = await this.getCollection();
 
-    let existing_user = await collection.findOne({ _id: new ObjectId(id) });
+    const existing_user = await collection.findOne({ _id: new ObjectId(id) });
     if (!existing_user) {
       return null;
     }
 
-    let now = new Date();
+    const now = new Date();
     await collection.updateOne(
       { _id: new ObjectId(id) },
       {
@@ -103,12 +105,12 @@ export default class User extends Model {
   async delete(id: string) {
     const collection = await this.getCollection();
 
-    let existing_user = await collection.findOne({ _id: new ObjectId(id) });
+    const existing_user = await collection.findOne({ _id: new ObjectId(id) });
     if (!existing_user) {
       return null;
     }
 
-    let document = await collection.deleteOne({ _id: new ObjectId(id) });
+    await collection.deleteOne({ _id: new ObjectId(id) });
     return {
       id: id,
     };

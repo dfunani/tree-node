@@ -77,3 +77,16 @@ export function generateServerResponses<T>(data: T, statusCode: StatusCodes) {
     );
   }
 }
+
+export function getIdFromRequest(request: Request) {
+  try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) return null;
+
+    return id;
+  } catch {
+    return null;
+  }
+}
