@@ -21,11 +21,18 @@ export const Credentials = z.object({
   password: z.string().regex(passwordRegex, "Invalid Password."),
 });
 
-export const TokenGenration = z.object({
+export const TokenGeneration = z.object({
   user_id: z.string().regex(objectIDRegex),
   email: z.string().email().regex(emailRegex, "Invalid Email."),
   password: z.string().regex(passwordRegex, "Invalid Password."),
   expires: z.number().optional().default(3600),
+});
+
+export const APIKeyGeneration = z.object({
+  user_id: z.string().regex(objectIDRegex),
+  token: z.string().min(16),
+  email: z.string().email().regex(emailRegex, "Invalid Email."),
+  password: z.string().regex(passwordRegex, "Invalid Password."),
 });
 
 export const UserProfile = z.object({
@@ -69,4 +76,19 @@ export const JWTPayload = z.object({
   password: z.string().regex(passwordRegex, "Invalid Password."),
   iat: z.number(),
   exp: z.number(),
+});
+
+export const JWTResponse = z.object({
+  token: z.string(),
+  expires: z.number(),
+  expiresAt: z.string().regex(systemDateRegex),
+  createdAt: z.string().regex(systemDateRegex),
+});
+
+export const APIKeyResponse = z.object({
+  user_id: z.string().regex(objectIDRegex),
+  apiKey: z.string(),
+  active: z.boolean(),
+  createdAt: z.string().regex(systemDateRegex),
+  expiresAt: z.string().regex(systemDateRegex),
 });

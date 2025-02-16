@@ -1,5 +1,5 @@
 import { APIClient } from "@/src/public/models/api_client";
-import { TokenGenration } from "@/src/public/models/data_classes/auth";
+import { JWTResponse, TokenGeneration } from "@/src/public/models/data_classes/auth";
 import {
   getDatabaseConfig,
   generateServerResponses,
@@ -9,7 +9,7 @@ import {
 export async function POST(request: Request) {
   try {
     const response = await request.json();
-    const credentials = TokenGenration.safeParse(response);
+    const credentials = TokenGeneration.safeParse(response);
     if (!credentials.success) {
       return generateServerResponses("Invalid User Request.", 400);
     }
@@ -21,7 +21,14 @@ export async function POST(request: Request) {
     if (!token) {
       return generateServerResponses("Token Generation Failed.", 500);
     }
-    return generateServerResponses(token, 200);
+
+    const data = JWTResponse.safeParse(token);
+    if (!data.success) {
+      console.log(`JWT Error: ${data.error}`);
+      return generateServerResponses("Token Generation Failed.", 500);
+    }
+
+    return generateServerResponses(data.data, 200);
   } catch (error) {
     console.log(`JWT Error: ${error}`);
     return generateServerResponses("Internal Server Error.", 500);

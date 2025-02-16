@@ -62,7 +62,12 @@ export class APIClient extends Model {
     const token = jwt.sign(payload, this.secret);
     if (!token) return null;
 
-    return { token, expires, expiresAt, createdAt: now };
+    return {
+      token,
+      expires,
+      expiresAt: expiresAt.toISOString(),
+      createdAt: now.toISOString(),
+    };
   }
 
   async validateAPIKey(key: string) {
@@ -113,5 +118,30 @@ export class APIClient extends Model {
     const resultProfile = user.getProfile(validToken.data.user_id);
     if (!resultProfile)
       throw new AuthenticationError("Invalid User Token. Invalid Profile.");
+  }
+
+  async deleteAPIKey(user_id: string, key: string | undefined) {
+    const collection = await this.getCollection();
+
+    const response = await collection.findOne({
+      user_id: user_id,
+      apiKey: key,
+    });
+    if (!response) return null;
+
+    const createdAt = response.createdAt;
+    const expiresAt = response.expiresAt;
+
+    const deleted = await collection.updateOne(
+      { user_id: user_id, apiKey: key },
+      {$set: { active: false }}
+    );
+    if (!deleted) return null;
+
+    return { user_id: user_id,
+      apiKey: key,
+      active: false,
+      createdAt: createdAt,
+      expiresAt: expiresAt,};
   }
 }

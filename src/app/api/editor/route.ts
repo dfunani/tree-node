@@ -1,138 +1,123 @@
 import Editor from "@/src/public/models/editor";
-import { getDatabaseConfig } from "@/src/public/utils/factories";
-import { DeleteEditor, FetchEditor } from "@/src/public/models/data_classes/editor";
+import {
+  generateServerResponses,
+  getDatabaseConfig,
+  getIdFromRequest,
+} from "@/src/public/utils/factories";
+import {
+  DeleteEditor,
+  FetchEditor,
+} from "@/src/public/models/data_classes/editor";
+import { validateAuthMethod } from "@/src/public/utils/validators";
+import { AuthenticationError } from "@/src/public/errors/auth";
 
 /** Get the Editor Nodes/Edges. */
-export async function GET(request: Request) {
-  const query = new URL(request.url);
-  const id = query.searchParams.get("id");
-
-  if (!id)
-    return Response.json({ message: "Invalid Editor ID." }, { status: 400 });
+export async function GET(request: Request, response: Response) {
+  const id = getIdFromRequest(request);
+  if (!id) return generateServerResponses("Invalid Editor Request.", 400);
 
   try {
+    await validateAuthMethod(request, response);
     const { db_url, db_name } = getDatabaseConfig();
-    const editor = await new Editor(db_url, db_name).get(id);
-    if (!editor) {
-      return Response.json(
-        { message: "No Editor Data Available for User ID." },
-        { status: 404 }
-      );
+    const editor = new Editor(db_url, db_name);
+
+    const newEditor = await editor.get(id);
+    if (!newEditor) {
+      return generateServerResponses("No Editor Data Found.", 404);
     }
 
-    const data = FetchEditor.safeParse(editor);
+    const data = FetchEditor.safeParse(newEditor);
     if (!data.success) {
       console.log(`Editor Error: ${data.error}`);
-      return Response.json(
-        { message: "Invalid Editor Respone." },
-        { status: 500 }
-      );
+      return generateServerResponses("Invalid Editor Data.", 500);
     }
 
-    return Response.json(
-      {
-        message: { ...data },
-        Timestamp: new Date().toISOString(),
-      },
-      { status: 200 }
-    );
+    return generateServerResponses(data.data, 200);
   } catch (error) {
     console.log(`Editor Error: ${error}`);
-    return Response.json(
-      { message: `Invalid Editor.` },
-      {
-        status: 500,
-      }
-    );
+
+    if (error instanceof AuthenticationError) {
+      return generateServerResponses("Unauthorized Editor Operations.", 403);
+    }
+
+    return generateServerResponses("Internal Server Error.", 500);
   }
 }
 
 /** Save Editor Nodes/Edges. */
-export async function POST(request: Request) {
+export async function POST(request: Request, response: Response) {
   try {
-    const response = await request.json();
+    await validateAuthMethod(request, response);
+    const res = await request.json();
 
-    const editorData = FetchEditor.safeParse(response);
+    const editorData = FetchEditor.safeParse(res);
     if (!editorData.success) {
       console.log(`Editor Error: ${editorData.error}`);
-      return Response.json(
-        { message: "Invalid Editor Request." },
-        { status: 500 }
-      );
+      return generateServerResponses("Invalid Editor Request.", 400);
     }
 
     const { db_url, db_name } = getDatabaseConfig();
-    const editor = await new Editor(db_url, db_name).update(
+    const editor = new Editor(db_url, db_name);
+
+    const updatedEditor = await editor.update(
       editorData.data.user_id,
       editorData.data
     );
-    if (!editor) {
-      return Response.json(
-        { message: "Invalid Editor Request." },
-        {
-          status: 500,
-        }
-      );
+    if (!updatedEditor) {
+      return generateServerResponses("Invalid Editor Request.", 400);
     }
 
-    const data = DeleteEditor.safeParse(editor);
+    const data = DeleteEditor.safeParse(updatedEditor);
     if (!data.success) {
       console.log(`Invalid Editor Respone: ${data.error}`);
-      return Response.json(
-        { message: "Invalid Editor Respone." },
-        { status: 500 }
-      );
+      return generateServerResponses("Invalid Editor Response.", 500);
     }
 
-    return Response.json({
-      message: { ...data },
-      timestamp: new Date().toISOString(),
-    });
+    return generateServerResponses(data.data, 200);
   } catch (error) {
-    console.log(`Editor Error: ${error}`)
-    return Response.json({ message: `Invalid Editor Operation.` });
+    console.log(`Editor Error: ${error}`);
+
+    if (error instanceof AuthenticationError) {
+      return generateServerResponses("Unauthorized Editor Operations.", 403);
+    }
+
+    return generateServerResponses("Internal Server Error.", 500);
   }
 }
 
 /** Delete Editor Nodes/Edges. */
-export async function DELETE(request: Request) {
+export async function DELETE(request: Request, response: Response) {
   try {
-    const response = await request.json();
-    const deleteEditor = DeleteEditor.safeParse(response);
-    
+    await validateAuthMethod(request, response);
+    const res = await request.json();
+
+    const deleteEditor = DeleteEditor.safeParse(res);
     if (!deleteEditor.success) {
       console.log(`Editor Error: ${deleteEditor.error}`);
-      return Response.json(
-        { message: "Invalid Editor Request." },
-        { status: 500 }
-      );
+      return generateServerResponses("Invalid Editor Request.", 400);
     }
     const { db_url, db_name } = getDatabaseConfig();
-    const editor = await new Editor(db_url, db_name).delete(deleteEditor.data.user_id);
-    if (!editor) {
-      return Response.json(
-        { message: "Invalid Editor Request." },
-        {
-          status: 500,
-        }
-      );
+    const editor = new Editor(db_url, db_name);
+
+    const deletedEditor = await editor.delete(deleteEditor.data.user_id);
+    if (!deletedEditor) {
+      return generateServerResponses("Invalid Editor Request.", 400);
     }
 
-    const data = DeleteEditor.safeParse(editor);
+    const data = DeleteEditor.safeParse(deletedEditor);
     if (!data.success) {
       console.log(`Invalid Editor Response: ${data.error}`);
-      return Response.json(
-        { message: "Invalid Editor Respone." },
-        { status: 500 }
-      );
+      return generateServerResponses("Invalid Editor Response.", 500);
     }
 
-    return Response.json({
-      message: { ...data },
-      timestamp: new Date().toISOString(),
-    });
+    return generateServerResponses(data.data, 200);
   } catch (error) {
     console.log(`Editor Error: ${error}`);
-    return Response.json({ message: `Invalid Editor Operation.` });
+
+    if (error instanceof AuthenticationError) {
+      return generateServerResponses("Unauthorized Editor Operations.", 403);
+    }
+
+    return generateServerResponses("Internal Server Error.", 500);
   }
 }
