@@ -78,10 +78,10 @@ export function generateServerResponses<T>(data: T, statusCode: StatusCodes) {
   }
 }
 
-export function getIdFromRequest(request: Request) {
+export function getIdFromRequest(request: Request, param: string = "id") {
   try {
     const url = new URL(request.url);
-    const id = url.searchParams.get("id");
+    const id = url.searchParams.get(param);
 
     if (!id) return null;
 

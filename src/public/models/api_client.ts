@@ -5,6 +5,8 @@ import { JWTPayload } from "@/src/public/models/data_classes/auth";
 import User from "@/src/public/models/users";
 import { AuthenticationError } from "@/src/public/errors/auth";
 import { JWTPayloadType } from "@/src/public/types/user";
+import { map } from "zod";
+import { WithId } from "mongodb";
 
 export class APIClient extends Model {
   secret: string;
@@ -129,19 +131,42 @@ export class APIClient extends Model {
     });
     if (!response) return null;
 
-    const createdAt = response.createdAt;
-    const expiresAt = response.expiresAt;
+    const createdAt = response.createdAt.toISOString();
+    const expiresAt = response.expiresAt.toISOString();
 
     const deleted = await collection.updateOne(
       { user_id: user_id, apiKey: key },
-      {$set: { active: false }}
+      { $set: { active: false } }
     );
     if (!deleted) return null;
 
-    return { user_id: user_id,
+    return {
+      user_id: user_id,
       apiKey: key,
       active: false,
       createdAt: createdAt,
-      expiresAt: expiresAt,};
+      expiresAt: expiresAt,
+    };
+  }
+
+  async getAllAPIKey(user_id: string) {
+    const collection = await this.getCollection();
+
+    const response = await collection
+      .find({
+        user_id: user_id,
+      })
+      .toArray();
+    if (!response) return null;
+
+    return response.map((data: WithId<any>) => {
+      return {
+        user_id: data.user_id,
+        apiKey: data.apiKey,
+        active: data.active,
+        createdAt: data.createdAt,
+        expiresAt: data.expiresAt,
+      };
+    });
   }
 }
