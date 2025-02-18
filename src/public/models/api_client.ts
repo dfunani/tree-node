@@ -5,7 +5,6 @@ import { JWTPayload } from "@/src/public/models/data_classes/auth";
 import User from "@/src/public/models/users";
 import { AuthenticationError } from "@/src/public/errors/auth";
 import { JWTPayloadType } from "@/src/public/types/user";
-import { map } from "zod";
 import { WithId } from "mongodb";
 
 export class APIClient extends Model {

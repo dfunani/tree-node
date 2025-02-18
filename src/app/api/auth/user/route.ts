@@ -12,7 +12,7 @@ import {
 } from "@/src/public/utils/factories";
 
 import { AuthenticationError } from "@/src/public/errors/auth";
-import { validateAuthMethod } from "@/src/public/utils/validators";
+import { AuthService } from "@/src/public/models/auth";
 
 /** Get User profile. */
 export async function GET(request: Request, response: Response) {
@@ -20,7 +20,7 @@ export async function GET(request: Request, response: Response) {
   if (!id) return generateServerResponses("Invalid User Request.", 400);
 
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const { db_url, db_name } = getDatabaseConfig();
     const user = new User(db_url, db_name);
 
@@ -48,7 +48,7 @@ export async function GET(request: Request, response: Response) {
 /** Create/Register a New User. */
 export async function POST(request: Request, response: Response) {
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const res = await request.json();
 
     const registration = RegisterUser.safeParse(res);
@@ -86,7 +86,7 @@ export async function POST(request: Request, response: Response) {
 /** Update User profiles. */
 export async function PATCH(request: Request, response: Response) {
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const res = await request.json();
 
     const patchDetails = PatchDetails.safeParse(res);
@@ -128,7 +128,7 @@ export async function PATCH(request: Request, response: Response) {
 /** Delete Existing User. */
 export async function DELETE(request: Request, response: Response) {
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const res = await request.json();
 
     const deleteUser = FetchUser.safeParse(res);

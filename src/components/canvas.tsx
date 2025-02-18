@@ -197,8 +197,8 @@ export default function Canvas() {
     if (response.ok) {
       dispatch(
         editorUpdate({
-          nodes: data.message.data.nodes,
-          edges: data.message.data.edges,
+          nodes: data.message.nodes,
+          edges: data.message.edges,
         })
       );
     } else {
@@ -215,7 +215,7 @@ export default function Canvas() {
     const response = await fetch(`/api/auth/user?id=${id}`, { method: "GET" });
     const profile = await response.json();
     if (response.ok) {
-      dispatch(profileUpdate(profile.message.data));
+      dispatch(profileUpdate(profile.message));
     } else {
       setError("User Profile Failed to Load. Try Again Later.");
     }

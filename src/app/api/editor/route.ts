@@ -8,7 +8,7 @@ import {
   DeleteEditor,
   FetchEditor,
 } from "@/src/public/models/data_classes/editor";
-import { validateAuthMethod } from "@/src/public/utils/validators";
+import { AuthService } from "@/src/public/models/auth";
 import { AuthenticationError } from "@/src/public/errors/auth";
 
 /** Get the Editor Nodes/Edges. */
@@ -17,7 +17,7 @@ export async function GET(request: Request, response: Response) {
   if (!id) return generateServerResponses("Invalid Editor Request.", 400);
 
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const { db_url, db_name } = getDatabaseConfig();
     const editor = new Editor(db_url, db_name);
 
@@ -47,7 +47,7 @@ export async function GET(request: Request, response: Response) {
 /** Save Editor Nodes/Edges. */
 export async function POST(request: Request, response: Response) {
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const res = await request.json();
 
     const editorData = FetchEditor.safeParse(res);
@@ -88,7 +88,7 @@ export async function POST(request: Request, response: Response) {
 /** Delete Editor Nodes/Edges. */
 export async function DELETE(request: Request, response: Response) {
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const res = await request.json();
 
     const deleteEditor = DeleteEditor.safeParse(res);

@@ -1,5 +1,5 @@
 import Model from "@/src/public/models/model";
-import { EditorState } from "@/lib/reducers/editor";
+import { EditorType } from "../types/editor";
 
 
 

@@ -1,4 +1,5 @@
 import { AuthenticationError } from "@/src/public/errors/auth";
+import { AuthService } from "@/src/public/models/auth";
 import { LoginUser, Credentials } from "@/src/public/models/data_classes/auth";
 import User from "@/src/public/models/users";
 import Security from "@/src/public/utils/cryptography";
@@ -6,12 +7,11 @@ import {
   getDatabaseConfig,
   generateServerResponses,
 } from "@/src/public/utils/factories";
-import { validateAuthMethod } from "@/src/public/utils/validators";
 
 /** Retrieves Login Details. */
 export async function POST(request: Request, response: Response) {
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();
     const res = await request.json();
 
     const credentials = Credentials.safeParse(res);

@@ -11,7 +11,7 @@ import {
   getDatabaseConfig,
   getIdFromRequest,
 } from "@/src/public/utils/factories";
-import { validateAuthMethod } from "@/src/public/utils/validators";
+import { AuthService } from "@/src/public/models/auth";
 
 export async function GET(request: Request, response: Response) {
   const id = getIdFromRequest(request);
@@ -20,7 +20,7 @@ export async function GET(request: Request, response: Response) {
   }
 
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
 
     const { db_url, db_name } = getDatabaseConfig();
     const apiClient = new APIClient(db_url, db_name);
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
 /** Deactivate/Delete APIKey */
 export async function DELETE(request: Request, response: Response) {
   try {
-    await validateAuthMethod(request, response);
+    await new AuthService(request, response).validateAuthMethod();;
     const res = await request.json();
 
     const credentials = APIKeyGeneration.safeParse(res);
