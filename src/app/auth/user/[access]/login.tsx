@@ -19,9 +19,10 @@ export default function Page() {
     email: "",
     password: "",
   });
-  const [errorText, setErrorText] = useState<string | null>(null);
+  const [resolveText, setresolveText] = useState<string | null>(null);
 
   function handleUpdateCredentials(key: string, value: string) {
+    if (resolveText) setresolveText(null);
     setCredentials((prevCreds: CredentialsType) => {
       return { ...prevCreds, [key]: value };
     });
@@ -41,11 +42,8 @@ export default function Page() {
 
   useEffect(() => {
     if (resolve) {
-      setErrorText(handleErrors("user", resolve));
-      setTimeout(() => {
-        router.push("/auth/user/login");
-        setErrorText(null);
-      }, 2000);
+      setresolveText(handleErrors("user", resolve));
+      router.replace("/auth/user/login");
     }
   }, [resolve, router]);
 
@@ -60,7 +58,7 @@ export default function Page() {
         handleUpdateCredentials={handleUpdateCredentials}
         handleLogin={handleLogin}
       />
-      {errorText && <p className={styles.error}>{errorText}</p>}
+      {resolveText && <p className={styles.error}>{resolveText}</p>}
     </div>
   );
 }
