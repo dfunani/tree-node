@@ -3,7 +3,7 @@
 import "@/src/app/globals.css";
 
 import { useParams } from "next/navigation";
-import Error from "next/error";
+import NotFound from "@/src/app/not-found";
 
 import Login from "@/src/app/auth/user/[access]/login";
 import Register from "@/src/app/auth/user/[access]/register";
@@ -15,7 +15,7 @@ export default function Page() {
   const param = access?.toString() ?? "";
 
   if (!SLUGS.includes(param)) {
-    return <Error statusCode={404} />;
+    return <NotFound />;
   }
 
   return (

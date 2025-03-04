@@ -3,11 +3,12 @@
 "use client";
 
 import { ReactNode } from "react";
+import { PersistGate } from "redux-persist/integration/react";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
+
 import { store, persistor } from "@/lib/store";
-import { PersistGate } from "redux-persist/integration/react";
 
 type Props = {
   session: Session | null;

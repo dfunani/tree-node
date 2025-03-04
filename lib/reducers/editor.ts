@@ -11,11 +11,10 @@ const editorState = createSlice({
   initialState,
   reducers: {
     UPDATE: (
-      state: EditorStateType,
+      _: EditorStateType,
       action: PayloadAction<EditorStateType>
     ) => {
-      state = { ...state, ...action.payload };
-      return state;
+      return action.payload
     },
     CLEAR: (state: EditorStateType) => {
       state = initialState;
