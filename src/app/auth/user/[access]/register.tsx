@@ -48,6 +48,7 @@ export default function Page() {
       body: JSON.stringify(registration),
       headers: {
         "Content-Type": "application/json",
+        "x-api-key": process.env.NEXT_PUBLIC_API_KEY ?? "",
       },
     });
 
@@ -56,7 +57,7 @@ export default function Page() {
     } else if (response.status == 409) {
       router.push(`/auth/user/login?resolve=Conflict`);
     } else {
-      setResolveText("Invalid Submission. Update Required Fields.");
+      setResolveText("Invalid Submission. Provide All Fields Below.");
     }
   }
   return (

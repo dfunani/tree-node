@@ -1,7 +1,6 @@
 "use client";
 
-import styles from "@/src/components/redirect.module.css";
-import { signIn } from "next-auth/react";
+import styles from "@/src/public/styles/redirect.module.css";
 
 export default function Redirect() {
   return (

@@ -32,7 +32,7 @@
   align-items: center;
   position: relative;
   background-color: var(--foreground);
-  border: solid var(--content) 1px;
+  border: solid var(--background) 1px;
   margin-bottom: 10px;
 }
 
@@ -44,6 +44,7 @@
   border-radius: 60%;
   opacity: 0;
   z-index: 500;
+  border: none;
 }
 
 .file-button{
@@ -80,6 +81,7 @@
   justify-content: center;
   align-items: center;
   margin: 10px;
+  gap: 10px;
   width: 100%;
 }
 
@@ -88,13 +90,13 @@
   color: var(--content);
   padding: 10px 15px;
   border-radius: 3px;
-  border: none;
+  border: solid 1px var(--foreground);
   cursor: pointer;
   width: 40%;
 }
 
 .button:hover {
-  border: solid 1px var(--foreground);
+  border: solid 1px var(--background);
 }
 
 .error {
