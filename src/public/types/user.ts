@@ -1,20 +1,19 @@
 import { StaticImageData } from "next/image";
 
-export type RegistrationType = {
-  email: string;
-  password: string;
-  name?: string;
-  surname?: string;
-  dob?: string;
-  city?: string;
-  country?: string;
-  image?: string | null | StaticImageData;
-};
-
 export type CredentialsType = {
   email: string;
   password: string;
 };
+
+export type RegistrationType = CredentialsType & {
+  name: string;
+  surname: string;
+  dob: string;
+  city: string;
+  country: string;
+  image: string | null | StaticImageData;
+};
+
 
 export type UserType = Pick<RegistrationType, "email" | "password"> & {
   id: string;

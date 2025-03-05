@@ -14,7 +14,7 @@ import { RegistrationType } from "@/src/public/types/user";
 export default function Page() {
   const router = useRouter();
   const [submit, setSubmit] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [resolveText, setResolveText] = useState<string | null>(null);
   const [registration, setRegistration] = useState<RegistrationType>({
     email: "",
     password: "",
@@ -31,9 +31,9 @@ export default function Page() {
       validateEmail(registration.email) &&
       validatePassword(registration.password)
     ) {
-      setError(null);
+      setResolveText(null);
       setSubmit(true);
-    } else setError("Please Provide Valid Email and Password.");
+    } else setResolveText("Please Provide Valid Email and Password.");
   }
 
   function handleUpdateRegistration(key: string, value: string) {
@@ -56,7 +56,7 @@ export default function Page() {
     } else if (response.status == 409) {
       router.push(`/auth/user/login?resolve=Conflict`);
     } else {
-      setError("Invalid Submission. Update Required Fields.");
+      setResolveText("Invalid Submission. Update Required Fields.");
     }
   }
   return (
@@ -72,7 +72,7 @@ export default function Page() {
           handleLogin={handleLogin}
         />
       )}
-      {error && <p className={styles.error}>{error}</p>}
+      {resolveText && <p className={styles.error}>{resolveText}</p>}
 
       {submit && (
         <Registration
