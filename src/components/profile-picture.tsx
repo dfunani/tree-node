@@ -1,4 +1,5 @@
-import styles from "@/src/components/button.module.css";
+import styles from "@/src/public/styles/button.module.css";
+
 import Image, { StaticImageData } from "next/image";
 
 type Props = {
@@ -6,6 +7,7 @@ type Props = {
   name: string;
   toggleMenu: () => void;
 };
+
 export default function ProfilePicture(props: Props) {
   return (
     <button

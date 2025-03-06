@@ -1,4 +1,4 @@
-import styles from "@/src/components/button.module.css"
+import styles from "@/src/public/styles/button.module.css"
 
 type Props = {
     saveNodes: () => void

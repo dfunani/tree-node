@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from "@/src/components/button.module.css"
+import styles from "@/src/public/styles/button.module.css"
 
 type Props = {
     show: boolean;

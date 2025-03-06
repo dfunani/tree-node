@@ -45,6 +45,10 @@ import { UPDATE as editorUpdate } from "@/lib/reducers/editor";
 const NodeComponents = {
   "Canvas-Item": CanvasItem,
 };
+type ResolveType = {
+  text: string;
+  status: "error" | "success";
+};
 
 export default function Canvas() {
   const { data: session } = useSession();
@@ -56,8 +60,7 @@ export default function Canvas() {
 
   const [show, setShow] = useState(false);
   const [showProfile, setshowProfile] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [resolve, setReolve] = useState<ResolveType | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   const onConnect = useCallback(
@@ -144,14 +147,23 @@ export default function Canvas() {
           edges: editorState.edges,
         }),
       });
+
       if (response.ok) {
-        setSuccess(true);
-        setError("Nodes/Edges Saved Successfully");
+        setReolve({
+          text: "Nodes/Edges Saved Successfully",
+          status: "success",
+        });
       } else {
-        setError("Couldn't Save Editor. Try Again Later.");
+        setReolve({
+          text: "Couldn't Save Editor. Try Again Later.",
+          status: "error",
+        });
       }
     } catch (error) {
-      setError("Couldn't Save Editor. Try Again Later.");
+      setReolve({
+        text: "Couldn't Save Editor. Try Again Later.",
+        status: "error",
+      });
     }
   }
 
@@ -163,14 +175,23 @@ export default function Canvas() {
           user_id: user_id,
         }),
       });
+
       if (response.ok) {
-        setSuccess(true);
-        setError("Nodes/Edges Deleted Successfully");
+        setReolve({
+          text: "Nodes/Edges Saved Successfully",
+          status: "success",
+        });
       } else {
-        setError("Couldn't Delete Editor. Try Again Later.");
+        setReolve({
+          text: "Couldn't Delete Editor. Try Again Later.",
+          status: "error",
+        });
       }
     } catch (error) {
-      setError("Couldn't Delete Editor. Try Again Later.");
+      setReolve({
+        text: "Couldn't Delete Editor. Try Again Later.",
+        status: "error",
+      });
     }
   }
 
@@ -217,7 +238,10 @@ export default function Canvas() {
     if (response.ok) {
       dispatch(profileUpdate(profile.message));
     } else {
-      setError("User Profile Failed to Load. Try Again Later.");
+      setReolve({
+        text: "User Profile Failed to Load. Try Again Later.",
+        status: "error",
+      });
     }
   }
 
@@ -265,18 +289,13 @@ export default function Canvas() {
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
           <SaveButton saveNodes={saveNodes} />
-          {error && (
-            <div
-              className={`${styles["error"]} ${
-                success ? styles["success"] : ""
-              }`}
-            >
-              <span className={styles["error-text"]}>{error}</span>
+          {resolve && (
+            <div className={`${styles["error"]} ${styles[resolve.status]}`}>
+              <span className={styles["error-text"]}>{resolve.text}</span>
               <span
                 className={styles["error-close"]}
                 onClick={() => {
-                  setError(null);
-                  setSuccess(false);
+                  setReolve(null);
                 }}
               >
                 &times;

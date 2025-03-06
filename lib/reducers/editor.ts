@@ -10,19 +10,12 @@ const editorState = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    UPDATE: (
-      _: EditorStateType,
-      action: PayloadAction<EditorStateType>
-    ) => {
-      return action.payload
-    },
-    CLEAR: (state: EditorStateType) => {
-      state = initialState;
-      return state;
+    UPDATE: (_: EditorStateType, action: PayloadAction<EditorStateType>) => {
+      return action.payload;
     },
   },
 });
 
-export const { UPDATE, CLEAR } = editorState.actions;
+export const { UPDATE } = editorState.actions;
 
 export default editorState.reducer;

@@ -1,9 +1,11 @@
+import styles from "@/src/public/styles/button.module.css";
+
+import { signOut } from "next-auth/react";
+import { useDispatch } from "react-redux";
+
 import { CLEAR as clearUser } from "@/lib/reducers/user";
 import { CLEAR as clearProfile } from "@/lib/reducers/profile";
 import { CLEAR as clearEditor } from "@/lib/reducers/editor";
-import styles from "@/src/components/button.module.css";
-import { signOut } from "next-auth/react";
-import { useDispatch } from "react-redux";
 
 export default function LogoutButton() {
   const dispatch = useDispatch();

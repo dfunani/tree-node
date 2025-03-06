@@ -1,7 +1,7 @@
-import styles from "@/src/components/button.module.css";
-import { useDispatch } from "react-redux";
-import { CLEAR as clearEditor } from "@/lib/reducers/editor";
+import styles from "@/src/public/styles/button.module.css";
 
+import { useDispatch } from "react-redux";
+import { UPDATE as editorUpdate } from "@/lib/reducers/editor";
 
 type Props = {
   id: string | null;
@@ -16,7 +16,12 @@ export default function DeleteButton(props: Props) {
       className={styles["delete-pill"]}
       onClick={() => {
         props.delete(props.id);
-        dispatch(clearEditor());
+        dispatch(
+          editorUpdate({
+            nodes: [],
+            edges: [],
+          })
+        );
       }}
     >
       <span className={styles["logout-pill-text"]}>Clear</span>
