@@ -108,6 +108,7 @@
 
 .profile-pill {
   position: fixed;
+  top: 30px;
   width: 50px;
   /* Adjust width as needed */
   height: 50px;
