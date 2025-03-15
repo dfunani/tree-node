@@ -9,7 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.7",
+    "@mui/material": "^6.4.7",
     "@reduxjs/toolkit": "^2.5.0",
+    "@toolpad/core": "^0.13.0",
     "@xyflow/react": "^12.3.5",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",

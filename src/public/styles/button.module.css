@@ -23,20 +23,27 @@
   left: 50%;
 }
 
+.edit-pill {
+  top: 90px;
+  left: 25px;
+
+}
+
 .logout-pill {
-  top: 80px;
+  top: 150px;
   left: 25px;
 
 }
 
 .delete-pill {
-  top: 140px;
+  top: 210px;
   left: 25px;
 }
 
 .save-pill,
 .logout-pill,
-.delete-pill {
+.delete-pill,
+.edit-pill {
   position: fixed;
   width: 50px;
   /* Adjust width as needed */
@@ -84,7 +91,8 @@
 
 .save-pill:hover,
 .logout-pill:hover,
-.delete-pill:hover {
+.delete-pill:hover,
+.edit-pill:hover {
   width: 100px;
   border: none;
   /* padding: 10px 20px; */
@@ -99,7 +107,8 @@
 
 .save-pill:hover .save-pill-text,
 .logout-pill:hover .logout-pill-text,
-.delete-pill:hover .logout-pill-text {
+.delete-pill:hover .logout-pill-text,
+.edit-pill:hover .logout-pill-text {
   display: block;
   /* Show text on hover */
   font-size: 15px;

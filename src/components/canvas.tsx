@@ -32,6 +32,7 @@ import { StateReducerType } from "../public/types/states";
 import { StaticImageData } from "next/image";
 import CanvasItem from "@/src/components/canvas-item";
 import SaveButton from "@/src/components/save-button";
+import EditButton from "@/src/components/edit-button";
 import { useSession } from "next-auth/react";
 import LogoutButton from "./logout-button";
 import DeleteButton from "./delete-button";
@@ -41,6 +42,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { UPDATE as userUpdate } from "@/lib/reducers/user";
 import { UPDATE as profileUpdate } from "@/lib/reducers/profile";
 import { UPDATE as editorUpdate } from "@/lib/reducers/editor";
+import ProfileMenu from "@/src/components/profile-menu";
+import ProfileMenuItem from "./profile-menu-item";
+
 
 const NodeComponents = {
   "Canvas-Item": CanvasItem,
@@ -59,7 +63,7 @@ export default function Canvas() {
   const profileState = useSelector((state: StateReducerType) => state.profile);
 
   const [show, setShow] = useState(false);
-  const [showProfile, setshowProfile] = useState(false);
+  const [menu, setMenu] = useState(false);
   const [resolve, setReolve] = useState<ResolveType | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
@@ -106,7 +110,7 @@ export default function Canvas() {
     setShow((prev: boolean) => !prev);
   }
   function toggleProfile() {
-    setshowProfile((prev: boolean) => !prev);
+    setMenu((prev: boolean) => !prev);
   }
 
   function addNode(
@@ -265,7 +269,9 @@ export default function Canvas() {
 
   return (
     <div className={styles.canvas}>
-      <ReactFlow
+      {menu && <ProfileMenuItem handleClose={toggleProfile}/>}
+     
+      {!menu && <ReactFlow
         nodes={editorState.nodes ?? []}
         edges={editorState.edges ?? []}
         onNodesChange={onNodesChange}
@@ -280,12 +286,13 @@ export default function Canvas() {
             name={profileState?.name ?? ""}
             toggleMenu={toggleProfile}
           />
-          {showProfile && (
+          {/* {showProfile && (
             <MenuDropdown>
+              <EditButton/>
               <LogoutButton />
               <DeleteButton id={userState.id} delete={deleteEditor} />
             </MenuDropdown>
-          )}
+          )} */}
           <MenuButton show={show} toggleMenu={toggleMenu} />
           {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
           <SaveButton saveNodes={saveNodes} />
@@ -305,7 +312,7 @@ export default function Canvas() {
         </Panel>
         <MiniMap className={styles.controls} />
         <Background variant={BackgroundVariant.Dots} gap={15} size={2} />
-      </ReactFlow>
+      </ReactFlow>}
     </div>
   );
 }
