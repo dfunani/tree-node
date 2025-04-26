@@ -26,7 +26,7 @@ export async function GET(request: Request, response: Response) {
     const apiClient = new APIClient(db_url, db_name);
     const tokens = await apiClient.getAllAPIKey(id);
     if (!tokens) {
-      return generateServerResponses("No Tokens to Retrieve.", 400);
+      return generateServerResponses("No Tokens to Retrieve.", 404);
     }
 
     return generateServerResponses(tokens, 200);

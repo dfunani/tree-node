@@ -45,7 +45,6 @@ import { UPDATE as editorUpdate } from "@/lib/reducers/editor";
 import ProfileMenu from "@/src/components/profile-menu";
 import ProfileMenuItem from "./profile-menu-item";
 
-
 const NodeComponents = {
   "Canvas-Item": CanvasItem,
 };
@@ -269,50 +268,54 @@ export default function Canvas() {
 
   return (
     <div className={styles.canvas}>
-      {menu && <ProfileMenuItem handleClose={toggleProfile}/>}
-     
-      {!menu && <ReactFlow
-        nodes={editorState.nodes ?? []}
-        edges={editorState.edges ?? []}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={NodeComponents}
-      >
-        <Controls className={styles.controls} />
-        <Panel>
-          <ProfilePicture
-            image={profileState?.image ?? ""}
-            name={profileState?.name ?? ""}
-            toggleMenu={toggleProfile}
-          />
-          {/* {showProfile && (
+      {menu && (
+        <ProfileMenuItem id={userState.id ?? ""} handleClose={toggleProfile} />
+      )}
+
+      {!menu && (
+        <ReactFlow
+          nodes={editorState.nodes ?? []}
+          edges={editorState.edges ?? []}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={NodeComponents}
+        >
+          <Controls className={styles.controls} />
+          <Panel>
+            <ProfilePicture
+              image={profileState?.image ?? ""}
+              name={profileState?.name ?? ""}
+              toggleMenu={toggleProfile}
+            />
+            {/* {showProfile && (
             <MenuDropdown>
               <EditButton/>
               <LogoutButton />
               <DeleteButton id={userState.id} delete={deleteEditor} />
             </MenuDropdown>
           )} */}
-          <MenuButton show={show} toggleMenu={toggleMenu} />
-          {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
-          <SaveButton saveNodes={saveNodes} />
-          {resolve && (
-            <div className={`${styles["error"]} ${styles[resolve.status]}`}>
-              <span className={styles["error-text"]}>{resolve.text}</span>
-              <span
-                className={styles["error-close"]}
-                onClick={() => {
-                  setReolve(null);
-                }}
-              >
-                &times;
-              </span>
-            </div>
-          )}
-        </Panel>
-        <MiniMap className={styles.controls} />
-        <Background variant={BackgroundVariant.Dots} gap={15} size={2} />
-      </ReactFlow>}
+            <MenuButton show={show} toggleMenu={toggleMenu} />
+            {show && <MenuDropdown>{getMenuItems()}</MenuDropdown>}
+            <SaveButton saveNodes={saveNodes} />
+            {resolve && (
+              <div className={`${styles["error"]} ${styles[resolve.status]}`}>
+                <span className={styles["error-text"]}>{resolve.text}</span>
+                <span
+                  className={styles["error-close"]}
+                  onClick={() => {
+                    setReolve(null);
+                  }}
+                >
+                  &times;
+                </span>
+              </div>
+            )}
+          </Panel>
+          <MiniMap className={styles.controls} />
+          <Background variant={BackgroundVariant.Dots} gap={15} size={2} />
+        </ReactFlow>
+      )}
     </div>
   );
 }
